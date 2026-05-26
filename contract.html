@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Software Service Agreement</title>
+  <style>
+    body {
+      font-family: Georgia, serif;
+      font-size: 13px;
+      line-height: 1.7;
+      color: #111;
+      max-width: 750px;
+      margin: 60px auto;
+      padding: 0 40px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 18px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 4px;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 12px;
+      color: #555;
+      margin-bottom: 40px;
+    }
+    h2 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 30px;
+      margin-bottom: 6px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 4px;
+    }
+    .parties {
+      margin-bottom: 24px;
+    }
+    .parties table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .parties td {
+      padding: 6px 10px;
+      vertical-align: top;
+      width: 50%;
+    }
+    .parties td:first-child {
+      border-right: 1px solid #ddd;
+    }
+    .label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #666;
+    }
+    .value {
+      font-weight: bold;
+    }
+    .placeholder {
+      color: #999;
+      font-style: italic;
+    }
+    ul {
+      margin: 6px 0 12px 0;
+      padding-left: 20px;
+    }
+    li {
+      margin-bottom: 4px;
+    }
+    .fee-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+    }
+    .fee-table th, .fee-table td {
+      border: 1px solid #ccc;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .fee-table th {
+      background: #f5f5f5;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .signature-block {
+      margin-top: 60px;
+      display: flex;
+      justify-content: space-between;
+      gap: 40px;
+    }
+    .sig-box {
+      flex: 1;
+    }
+    .sig-line {
+      border-top: 1px solid #333;
+      margin-top: 50px;
+      padding-top: 6px;
+      font-size: 12px;
+    }
+    .date-line {
+      border-top: 1px solid #333;
+      margin-top: 20px;
+      padding-top: 6px;
+      font-size: 12px;
+    }
+    .notice {
+      margin-top: 50px;
+      font-size: 11px;
+      color: #888;
+      border-top: 1px solid #eee;
+      padding-top: 12px;
+      text-align: center;
+    }
+    @media print {
+      body { margin: 0; padding: 30px; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Software Service Agreement</h1>
+  <div class="subtitle">Gym Attendance Management System</div>
+
+  <div class="parties">
+    <table>
+      <tr>
+        <td>
+          <div class="label">Service Provider</div>
+          <div class="value">Reymart Louie</div>
+        </td>
+        <td>
+          <div class="label">Client</div>
+          <div class="value placeholder">[Client Name / Business Name]</div>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <p>This Software Service Agreement ("Agreement") is entered into as of <strong><span class="placeholder">[Date]</span></strong>, between <strong>Reymart Louie</strong> ("Developer") and <strong><span class="placeholder">[Client Name]</span></strong> ("Client").</p>
+
+  <h2>1. Scope of Work</h2>
+  <p>The Developer agrees to design, build, and deliver a local gym attendance management system ("the System") with the following features:</p>
+  <ul>
+    <li>Member registration and management (add, edit, deactivate)</li>
+    <li>Kiosk-based check-in and check-out</li>
+    <li>Admin dashboard with attendance records</li>
+    <li>Search, filter, and CSV export of attendance data</li>
+    <li>Secure admin login</li>
+    <li>Auto-start script for Windows PC</li>
+  </ul>
+
+  <h2>2. System Limitations</h2>
+  <p>The Client acknowledges that the System is built for:</p>
+  <ul>
+    <li><strong>Single location use only.</strong> The System operates on one (1) PC and does not support multiple branches or remote access.</li>
+    <li><strong>Local network only.</strong> No internet connection or cloud storage is included.</li>
+    <li><strong>Single gym deployment.</strong> This license covers one (1) installation only.</li>
+  </ul>
+  <p>Expansion to multiple branches, cloud hosting, or additional installations will be treated as a separate project and billed accordingly.</p>
+
+  <h2>3. Deliverables</h2>
+  <p>The Developer will deliver:</p>
+  <ul>
+    <li>Fully functional System installed on the Client's designated PC</li>
+    <li>Basic user guide / documentation</li>
+    <li>One (1) round of post-delivery bug fixes within 30 days of handover</li>
+  </ul>
+
+  <h2>4. Payment Terms</h2>
+  <table class="fee-table">
+    <tr>
+      <th>Item</th>
+      <th>Amount (PHP)</th>
+      <th>When Due</th>
+    </tr>
+    <tr>
+      <td>Setup & Development Fee (one-time)</td>
+      <td class="placeholder">[Amount]</td>
+      <td>50% upon signing, 50% upon delivery</td>
+    </tr>
+    <tr>
+      <td>Monthly Support & Maintenance Fee</td>
+      <td class="placeholder">[Amount] / month</td>
+      <td>Due on the 1st of each month</td>
+    </tr>
+  </table>
+  <p>The monthly support fee covers: bug fixes, minor feature adjustments, and technical assistance. It does not cover major feature additions or a new system build.</p>
+  <p>The Client may opt out of the monthly support fee at any time with 30 days written notice. Opting out means the Developer has no obligation to provide ongoing maintenance or support.</p>
+
+  <h2>5. Intellectual Property</h2>
+  <p>Upon full payment of the one-time development fee, the Client is granted a non-exclusive license to use the System. The Developer retains the right to reuse the underlying code and architecture for other projects. Custom features built specifically for this Client are not to be resold by the Developer to direct competitors without Client consent.</p>
+
+  <h2>6. Data & Backups</h2>
+  <p>The Client is responsible for maintaining regular backups of the system database. The Developer is not liable for data loss resulting from hardware failure, accidental deletion, or any event outside the Developer's control. The Developer may assist with backup setup as part of onboarding.</p>
+
+  <h2>7. Warranty</h2>
+  <p>The Developer warrants that the System will perform as described in Section 1 under normal use conditions. The warranty period is <strong>30 days</strong> from the date of delivery. After this period, fixes are covered under the monthly support fee (if active) or billed separately.</p>
+
+  <h2>8. Limitation of Liability</h2>
+  <p>The Developer's total liability under this Agreement shall not exceed the total amount paid by the Client in the preceding three (3) months. The Developer is not liable for indirect, incidental, or consequential damages, including loss of business revenue or data.</p>
+
+  <h2>9. Termination</h2>
+  <p>Either party may terminate the monthly support arrangement with 30 days written notice. The one-time development fee is non-refundable once delivery has been completed and accepted by the Client.</p>
+
+  <h2>10. Governing Law</h2>
+  <p>This Agreement shall be governed by the laws of the <strong>Republic of the Philippines</strong>. Any disputes shall first be attempted to be resolved through good-faith negotiation between the parties.</p>
+
+  <h2>11. Entire Agreement</h2>
+  <p>This document constitutes the entire agreement between the parties. Any modifications must be made in writing and signed by both parties.</p>
+
+  <div class="signature-block">
+    <div class="sig-box">
+      <div class="sig-line">Reymart Louie — Developer</div>
+      <div class="date-line">Date: ___________________</div>
+    </div>
+    <div class="sig-box">
+      <div class="sig-line"><span class="placeholder">[Client Name]</span> — Client</div>
+      <div class="date-line">Date: ___________________</div>
+    </div>
+  </div>
+
+  <div class="notice">
+    This contract was prepared as a general service agreement template. It is recommended to have it reviewed by a licensed attorney before use in a formal engagement.
+  </div>
+
+</body>
+</html>
