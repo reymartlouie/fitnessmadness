@@ -243,13 +243,26 @@ def renew_member(member_id):
     return redirect(url_for('admin.members'))
 
 
+@admin_bp.route('/members/<int:member_id>/delete-confirm', methods=['GET'])
+@login_required
+def delete_member_confirm(member_id):
+    member = Member.query.get_or_404(member_id)
+    return render_template('admin/delete_confirm.html', member=member)
+
+
 @admin_bp.route('/members/<int:member_id>/delete', methods=['POST'])
 @login_required
 def delete_member(member_id):
     member = Member.query.get_or_404(member_id)
+    confirm_id = request.form.get('confirm_id', '').strip()
+
+    if confirm_id != member.membership_id:
+        flash('Membership ID did not match. Deletion cancelled.', 'danger')
+        return redirect(url_for('admin.delete_member_confirm', member_id=member_id))
+
     name = member.full_name
     Attendance.query.filter_by(member_id=member.id).delete()
     db.session.delete(member)
     db.session.commit()
-    flash(f'Member "{name}" and all their attendance records have been deleted.', 'warning')
+    flash(f'Member "{name}" and all their attendance records have been permanently deleted.', 'warning')
     return redirect(url_for('admin.members'))

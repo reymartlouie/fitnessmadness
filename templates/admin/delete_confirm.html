@@ -1,0 +1,58 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Delete Member{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center gap-3 mb-4">
+    <a href="{{ url_for('admin.members') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>Back
+    </a>
+    <div>
+        <div class="page-title">Delete Member</div>
+        <div class="page-subtitle">This action cannot be undone</div>
+    </div>
+</div>
+
+<div style="max-width: 520px;">
+    <div class="table-card p-4">
+
+        <!-- Member summary -->
+        <div class="mb-4 p-3" style="background:#1e1e1e; border-radius:12px; border:1px solid #2a2a2a;">
+            <div class="fw-bold fs-5 mb-1">{{ member.full_name }}</div>
+            <div class="text-muted small">
+                {{ member.membership_id }} &middot; {{ member.membership_type.capitalize() }} &middot;
+                Expires {{ member.membership_end.strftime('%b %d, %Y') }}
+            </div>
+        </div>
+
+        <div class="alert alert-danger d-flex align-items-start gap-2 mb-4">
+            <i class="bi bi-exclamation-triangle-fill mt-1"></i>
+            <div>
+                Deleting this member will <strong>permanently remove</strong> their profile and all
+                attendance records. This cannot be recovered.
+            </div>
+        </div>
+
+        <form method="POST" action="{{ url_for('admin.delete_member', member_id=member.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="mb-4">
+                <label class="form-label">
+                    Type the membership ID <strong class="text-danger">{{ member.membership_id }}</strong> to confirm
+                </label>
+                <input type="text" name="confirm_id" class="form-control"
+                       placeholder="{{ member.membership_id }}" required autocomplete="off"
+                       autofocus>
+            </div>
+            <div class="d-flex gap-3">
+                <button type="submit" class="btn btn-danger px-4">
+                    <i class="bi bi-trash me-2"></i>Delete Permanently
+                </button>
+                <a href="{{ url_for('admin.members') }}" class="btn btn-outline-secondary px-4">
+                    Cancel
+                </a>
+            </div>
+        </form>
+
+    </div>
+</div>
+{% endblock %}
