@@ -3,6 +3,7 @@
 
 # Database
 database/fitnessmadness.db
+database/backups/
 
 # Python
 __pycache__/

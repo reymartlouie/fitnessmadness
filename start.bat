@@ -12,6 +12,9 @@ if not exist database\fitnessmadness.db (
     python database\init_db.py
 )
 
+:: Back up the database on every startup (keeps last 7 copies in database\backups\)
+python database\backup.py
+
 :: Start Flask in the background
 start /B python app.py
 
