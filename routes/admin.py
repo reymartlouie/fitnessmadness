@@ -4,6 +4,7 @@ from flask import Blueprint, render_template, request, Response, redirect, url_f
 from flask_login import login_required
 from models.member import Member, MembershipType, MEMBERSHIP_PRICES
 from models.attendance import Attendance
+from models.payment import Payment
 from extensions import db
 from datetime import date, datetime, time
 from dateutil.relativedelta import relativedelta
@@ -297,10 +298,78 @@ def edit_member(member_id):
 @login_required
 def renew_member(member_id):
     member = Member.query.get_or_404(member_id)
+    amount = member.get_monthly_fee()
     member.renew()
+    payment = Payment(
+        member_id=member.id,
+        amount=amount,
+        payment_date=date.today(),
+        recorded_at=datetime.now(),
+        notes=f'{member.membership_type.capitalize()} membership renewal'
+    )
+    db.session.add(payment)
     db.session.commit()
-    flash(f'Membership for "{member.full_name}" renewed until {member.membership_end.strftime("%B %d, %Y")}.', 'success')
+    flash(
+        f'Membership for "{member.full_name}" renewed until '
+        f'{member.membership_end.strftime("%B %d, %Y")}. '
+        f'Payment of ₱{amount:,.2f} recorded.',
+        'success'
+    )
     return redirect(url_for('admin.members'))
+
+
+@admin_bp.route('/payments')
+@login_required
+def payments():
+    search = request.args.get('search', '').strip()
+    filter_date = request.args.get('date', '').strip()
+
+    query = Payment.query.join(Member)
+    if search:
+        query = query.filter(
+            (Member.full_name.ilike(f'%{search}%')) |
+            (Member.membership_id.ilike(f'%{search}%'))
+        )
+    if filter_date:
+        try:
+            parsed = datetime.strptime(filter_date, '%Y-%m-%d').date()
+            query = query.filter(Payment.payment_date == parsed)
+        except ValueError:
+            pass
+
+    logs = query.order_by(Payment.recorded_at.desc()).all()
+    total = sum(p.amount for p in logs)
+
+    return render_template('admin/payments.html',
+        logs=logs, total=total,
+        search=search, filter_date=filter_date)
+
+
+@admin_bp.route('/payments/export')
+@login_required
+def export_payments_csv():
+    logs = Payment.query.join(Member).order_by(Payment.recorded_at.desc()).all()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['Date', 'Member Name', 'Membership ID', 'Type', 'Amount (PHP)', 'Notes'])
+    for p in logs:
+        writer.writerow([
+            p.payment_date.strftime('%Y-%m-%d'),
+            p.member.full_name,
+            p.member.membership_id,
+            p.member.membership_type.capitalize(),
+            f'{p.amount:.2f}',
+            p.notes or '',
+        ])
+
+    output.seek(0)
+    filename = f"payments_{date.today().strftime('%Y-%m-%d')}.csv"
+    return Response(
+        output.getvalue(),
+        mimetype='text/csv',
+        headers={'Content-Disposition': f'attachment; filename={filename}'}
+    )
 
 
 @admin_bp.route('/members/<int:member_id>/delete-confirm', methods=['GET'])
@@ -322,6 +391,7 @@ def delete_member(member_id):
 
     name = member.full_name
     Attendance.query.filter_by(member_id=member.id).delete()
+    Payment.query.filter_by(member_id=member.id).delete()
     db.session.delete(member)
     db.session.commit()
     flash(f'Member "{name}" and all their attendance records have been permanently deleted.', 'warning')

@@ -264,8 +264,12 @@
                 <i class="bi bi-calendar-check"></i> Attendance
             </a>
             <a href="{{ url_for('admin.members') }}"
-               class="nav-link {% if request.endpoint == 'admin.members' %}active{% endif %}">
+               class="nav-link {% if request.endpoint in ['admin.members','admin.add_member','admin.edit_member'] %}active{% endif %}">
                 <i class="bi bi-people"></i> Members
+            </a>
+            <a href="{{ url_for('admin.payments') }}"
+               class="nav-link {% if request.endpoint in ['admin.payments'] %}active{% endif %}">
+                <i class="bi bi-cash-coin"></i> Payments
             </a>
         </nav>
 

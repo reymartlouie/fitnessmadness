@@ -15,6 +15,17 @@ MIGRATIONS = [
     ("members", "email",  "ALTER TABLE members ADD COLUMN email VARCHAR(120)"),
 ]
 
+CREATE_TABLES = [
+    """CREATE TABLE IF NOT EXISTS payments (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        member_id INTEGER NOT NULL REFERENCES members(id),
+        amount REAL NOT NULL,
+        payment_date DATE NOT NULL,
+        recorded_at DATETIME NOT NULL,
+        notes VARCHAR(200)
+    )""",
+]
+
 
 def run_migrations():
     app = create_app()
@@ -31,6 +42,9 @@ def run_migrations():
                 print(f"  Added column: {table}.{column}")
             else:
                 print(f"  Already exists: {table}.{column}")
+
+        for sql in CREATE_TABLES:
+            cursor.execute(sql)
 
         conn.commit()
         conn.close()

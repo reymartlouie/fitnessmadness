@@ -18,6 +18,7 @@ def create_app():
     login_manager.login_message_category = 'warning'
 
     from models.admin import Admin
+    from models.payment import Payment
     from routes.kiosk import kiosk_bp
     from routes.auth import auth_bp
     from routes.admin import admin_bp
