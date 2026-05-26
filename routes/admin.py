@@ -17,6 +17,17 @@ admin_bp = Blueprint('admin', __name__)
 def dashboard():
     today = date.today()
 
+    # Sync is_active for any member whose end date has passed but flag wasn't updated
+    # (check_expiry only runs when a member tries to check in, so this catches the rest)
+    stale_members = Member.query.filter(
+        Member.membership_end < today,
+        Member.is_active == True
+    ).all()
+    if stale_members:
+        for m in stale_members:
+            m.is_active = False
+        db.session.commit()
+
     total_checkins_today = Attendance.query.filter_by(attendance_date=today).count()
 
     active_members = Attendance.query.filter_by(
