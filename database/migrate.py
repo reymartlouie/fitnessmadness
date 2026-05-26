@@ -1,0 +1,41 @@
+"""
+Schema migration — safe to run multiple times.
+Adds new columns to existing tables without touching data.
+"""
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from app import create_app
+from extensions import db
+
+
+MIGRATIONS = [
+    ("members", "phone",  "ALTER TABLE members ADD COLUMN phone VARCHAR(20)"),
+    ("members", "email",  "ALTER TABLE members ADD COLUMN email VARCHAR(120)"),
+]
+
+
+def run_migrations():
+    app = create_app()
+    with app.app_context():
+        conn = db.engine.raw_connection()
+        cursor = conn.cursor()
+
+        for table, column, sql in MIGRATIONS:
+            # Check if column already exists before adding
+            cursor.execute(f"PRAGMA table_info({table})")
+            existing = [row[1] for row in cursor.fetchall()]
+            if column not in existing:
+                cursor.execute(sql)
+                print(f"  Added column: {table}.{column}")
+            else:
+                print(f"  Already exists: {table}.{column}")
+
+        conn.commit()
+        conn.close()
+        print("Migration complete.")
+
+
+if __name__ == '__main__':
+    run_migrations()

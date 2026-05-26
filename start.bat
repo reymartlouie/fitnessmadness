@@ -15,6 +15,9 @@ if not exist database\fitnessmadness.db (
 :: Back up the database on every startup (keeps last 7 copies in database\backups\)
 python database\backup.py
 
+:: Apply any schema updates (safe to run repeatedly)
+python database\migrate.py
+
 :: Start Flask in the background
 start /B python app.py
 

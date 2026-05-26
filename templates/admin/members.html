@@ -5,9 +5,15 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-start mb-1">
     <div class="page-title">Members</div>
-    <a href="{{ url_for('admin.add_member') }}" class="btn btn-warning btn-sm px-4">
-        <i class="bi bi-plus-lg me-1"></i>Add Member
-    </a>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('admin.export_members_csv', search=search, type=filter_type, status=filter_status) }}"
+           class="btn btn-outline-secondary btn-sm px-3">
+            <i class="bi bi-download me-1"></i>Export CSV
+        </a>
+        <a href="{{ url_for('admin.add_member') }}" class="btn btn-warning btn-sm px-4">
+            <i class="bi bi-plus-lg me-1"></i>Add Member
+        </a>
+    </div>
 </div>
 <div class="page-subtitle">Manage gym memberships</div>
 
@@ -70,6 +76,7 @@
                 <tr>
                     <th>Member</th>
                     <th>Membership ID</th>
+                    <th>Contact</th>
                     <th>Type</th>
                     <th>Monthly Fee</th>
                     <th>Expires</th>
@@ -83,6 +90,17 @@
                 <tr>
                     <td class="fw-semibold">{{ member.full_name }}</td>
                     <td><span class="text-muted">{{ member.membership_id }}</span></td>
+                    <td>
+                        {% if member.phone %}
+                            <div class="small"><i class="bi bi-telephone me-1 text-muted"></i>{{ member.phone }}</div>
+                        {% endif %}
+                        {% if member.email %}
+                            <div class="small"><i class="bi bi-envelope me-1 text-muted"></i>{{ member.email }}</div>
+                        {% endif %}
+                        {% if not member.phone and not member.email %}
+                            <span class="text-muted small">—</span>
+                        {% endif %}
+                    </td>
                     <td>
                         {% if member.membership_type == 'regular' %}
                             <span class="badge bg-primary bg-opacity-25 text-primary">Regular</span>

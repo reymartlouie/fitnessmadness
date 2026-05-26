@@ -63,6 +63,58 @@ def dashboard():
     )
 
 
+@admin_bp.route('/members/export')
+@login_required
+def export_members_csv():
+    search = request.args.get('search', '').strip()
+    filter_type = request.args.get('type', '').strip()
+    filter_status = request.args.get('status', '').strip()
+
+    query = Member.query
+    if search:
+        query = query.filter(
+            (Member.full_name.ilike(f'%{search}%')) |
+            (Member.membership_id.ilike(f'%{search}%'))
+        )
+    if filter_type and filter_type in MembershipType.ALL:
+        query = query.filter_by(membership_type=filter_type)
+    if filter_status == 'active':
+        query = query.filter_by(is_active=True)
+    elif filter_status == 'expired':
+        query = query.filter_by(is_active=False)
+
+    all_members = query.order_by(Member.created_at.desc()).all()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow([
+        'Membership ID', 'Full Name', 'Phone', 'Email',
+        'Type', 'Monthly Fee', 'Start Date', 'Expiry Date',
+        'Days Remaining', 'Status'
+    ])
+    for m in all_members:
+        writer.writerow([
+            m.membership_id,
+            m.full_name,
+            m.phone or '',
+            m.email or '',
+            m.membership_type.capitalize(),
+            f'{m.get_monthly_fee():.2f}',
+            m.membership_start.strftime('%Y-%m-%d'),
+            m.membership_end.strftime('%Y-%m-%d'),
+            m.days_remaining(),
+            'Active' if m.is_active else 'Expired',
+        ])
+
+    output.seek(0)
+    filename = f"members_{date.today().strftime('%Y-%m-%d')}.csv"
+    return Response(
+        output.getvalue(),
+        mimetype='text/csv',
+        headers={'Content-Disposition': f'attachment; filename={filename}'}
+    )
+
+
 @admin_bp.route('/attendance')
 @login_required
 def attendance():
@@ -178,6 +230,8 @@ def add_member():
     if request.method == 'POST':
         membership_id = request.form.get('membership_id', '').strip()
         full_name = request.form.get('full_name', '').strip()
+        phone = request.form.get('phone', '').strip()
+        email = request.form.get('email', '').strip()
         membership_type = request.form.get('membership_type', MembershipType.REGULAR)
 
         if not membership_id or not full_name:
@@ -193,6 +247,8 @@ def add_member():
         member = Member(
             membership_id=membership_id,
             full_name=full_name,
+            phone=phone or None,
+            email=email or None,
             membership_type=membership_type,
             membership_start=date.today(),
             membership_end=date.today() + relativedelta(months=1),
@@ -214,6 +270,8 @@ def edit_member(member_id):
 
     if request.method == 'POST':
         full_name = request.form.get('full_name', '').strip()
+        phone = request.form.get('phone', '').strip()
+        email = request.form.get('email', '').strip()
         membership_type = request.form.get('membership_type', member.membership_type)
 
         if not full_name:
@@ -223,6 +281,8 @@ def edit_member(member_id):
                 membership_types=MembershipType.ALL, prices=MEMBERSHIP_PRICES)
 
         member.full_name = full_name
+        member.phone = phone or None
+        member.email = email or None
         member.membership_type = membership_type
         db.session.commit()
         flash(f'Member "{full_name}" updated successfully.', 'success')

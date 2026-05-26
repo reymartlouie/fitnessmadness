@@ -24,6 +24,8 @@ class Member(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     membership_id = db.Column(db.String(50), unique=True, nullable=False)
     full_name = db.Column(db.String(120), nullable=False)
+    phone = db.Column(db.String(20), nullable=True)
+    email = db.Column(db.String(120), nullable=True)
     membership_type = db.Column(db.String(20), nullable=False, default=MembershipType.REGULAR)
     membership_start = db.Column(db.Date, nullable=False, default=date.today)
     membership_end = db.Column(db.Date, nullable=False)

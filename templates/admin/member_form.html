@@ -42,6 +42,21 @@
                        value="{{ member.full_name if action == 'edit' else request.form.get('full_name', '') }}">
             </div>
 
+            <div class="row g-3 mb-3">
+                <div class="col-sm-6">
+                    <label class="form-label text-muted small">Phone Number</label>
+                    <input type="tel" name="phone" class="form-control"
+                           placeholder="e.g. 09171234567"
+                           value="{{ member.phone or '' if action == 'edit' else request.form.get('phone', '') }}">
+                </div>
+                <div class="col-sm-6">
+                    <label class="form-label text-muted small">Email Address</label>
+                    <input type="email" name="email" class="form-control"
+                           placeholder="e.g. juan@email.com"
+                           value="{{ member.email or '' if action == 'edit' else request.form.get('email', '') }}">
+                </div>
+            </div>
+
             <div class="mb-4">
                 <label class="form-label text-muted small">Membership Type</label>
                 <select name="membership_type" class="form-select" id="typeSelect">
