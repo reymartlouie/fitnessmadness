@@ -1,7 +1,7 @@
 import os
 from flask import Flask
 from config import Config
-from extensions import db, login_manager, csrf
+from extensions import db, login_manager, csrf, limiter
 
 
 def create_app():
@@ -11,6 +11,7 @@ def create_app():
     db.init_app(app)
     login_manager.init_app(app)
     csrf.init_app(app)
+    limiter.init_app(app)
 
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Please log in to access the admin panel.'

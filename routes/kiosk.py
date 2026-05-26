@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from extensions import db
+from extensions import db, limiter
 from models.member import Member
 from models.attendance import Attendance
 from datetime import datetime, date
@@ -39,6 +39,7 @@ def my_records():
 
 
 @kiosk_bp.route('/checkin', methods=['POST'])
+@limiter.limit("20 per minute")
 def checkin():
     membership_id = request.form.get('membership_id', '').strip()
     full_name = request.form.get('full_name', '').strip()
@@ -86,6 +87,7 @@ def checkin():
 
 
 @kiosk_bp.route('/checkout', methods=['POST'])
+@limiter.limit("20 per minute")
 def checkout():
     membership_id = request.form.get('membership_id', '').strip()
 
