@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin{% endblock %} — FitnessMadness</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0f0f0f;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            min-height: 100vh;
+            background-color: #1a1a1a;
+            border-right: 1px solid #2a2a2a;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            color: #ff6b35;
+            font-weight: 800;
+            font-size: 1.3rem;
+            padding: 1.5rem;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .sidebar-brand span {
+            color: #888;
+            font-size: 0.75rem;
+            font-weight: 400;
+            display: block;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+            flex: 1;
+        }
+
+        .nav-link {
+            color: #888;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: #ff6b35;
+            background-color: rgba(255, 107, 53, 0.08);
+            border-left-color: #ff6b35;
+        }
+
+        .nav-link i { font-size: 1.1rem; }
+
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #2a2a2a;
+        }
+
+        .btn-logout {
+            background-color: transparent;
+            border: 1px solid #3a3a3a;
+            color: #888;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            border-color: #ff6b35;
+            color: #ff6b35;
+        }
+
+        /* Form controls */
+        .form-control, .form-select {
+            background-color: #2a2a2a !important;
+            border: 1px solid #3a3a3a !important;
+            color: #ffffff !important;
+            border-radius: 10px;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: #2a2a2a !important;
+            border-color: #ff6b35 !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.25) !important;
+        }
+
+        .form-control::placeholder { color: #555 !important; }
+
+        .form-control:disabled, .form-control[readonly] {
+            background-color: #1e1e1e !important;
+            color: #555 !important;
+        }
+
+        .form-select option {
+            background-color: #2a2a2a !important;
+            color: #ffffff !important;
+        }
+
+        .form-label {
+            color: #aaa !important;
+            font-size: 0.9rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .form-text { color: #666 !important; }
+
+        /* Input group */
+        .input-group-text {
+            background-color: #2a2a2a !important;
+            border: 1px solid #3a3a3a !important;
+            color: #888 !important;
+        }
+
+        /* General text visibility */
+        p, span, small, div { color: inherit; }
+        .text-muted { color: #666 !important; }
+        h1, h2, h3, h4, h5, h6 { color: #ffffff; }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .page-title {
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .page-subtitle {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Cards */
+        .stat-card {
+            background-color: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 14px;
+            padding: 1.5rem;
+            transition: border-color 0.2s;
+        }
+
+        .stat-card:hover { border-color: #3a3a3a; }
+
+        .stat-card .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-card .stat-label {
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .stat-card .stat-icon {
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+
+        /* Table */
+        .table-card {
+            background-color: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .table-card-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #2a2a2a;
+            font-weight: 600;
+        }
+
+        .table {
+            color: #ccc;
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background-color: #141414;
+            color: #666;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-color: #2a2a2a;
+            padding: 0.75rem 1.5rem;
+        }
+
+        .table tbody td {
+            border-color: #2a2a2a;
+            padding: 0.85rem 1.5rem;
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover { background-color: rgba(255,255,255,0.02); }
+
+        .badge-active {
+            background-color: rgba(25, 200, 100, 0.15);
+            color: #19c864;
+            padding: 0.3rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .badge-done {
+            background-color: rgba(100, 100, 100, 0.15);
+            color: #888;
+            padding: 0.3rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        /* Alerts */
+        .alert { border-radius: 10px; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            FitnessMadness
+            <span>Admin Panel</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('admin.dashboard') }}"
+               class="nav-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+            <a href="{{ url_for('admin.attendance') }}"
+               class="nav-link {% if request.endpoint == 'admin.attendance' %}active{% endif %}">
+                <i class="bi bi-calendar-check"></i> Attendance
+            </a>
+            <a href="{{ url_for('admin.members') }}"
+               class="nav-link {% if request.endpoint == 'admin.members' %}active{% endif %}">
+                <i class="bi bi-people"></i> Members
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="text-muted small mb-2">
+                <i class="bi bi-person-circle me-1"></i>{{ current_user.username }}
+            </div>
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-logout">
+                <i class="bi bi-box-arrow-left me-2"></i>Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,123 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-title">Dashboard</div>
+<div class="page-subtitle">{{ today.strftime('%A, %B %d, %Y') }}</div>
+
+<!-- Stat Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-value text-warning">{{ total_checkins_today }}</div>
+                    <div class="stat-label">Check-ins Today</div>
+                </div>
+                <i class="bi bi-calendar-check stat-icon text-warning"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-value text-success">{{ active_members }}</div>
+                    <div class="stat-label">Currently Inside</div>
+                </div>
+                <i class="bi bi-person-check stat-icon text-success"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-value text-info">{{ total_members }}</div>
+                    <div class="stat-label">Total Members</div>
+                </div>
+                <i class="bi bi-people stat-icon text-info"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-value text-danger">{{ expired_members }}</div>
+                    <div class="stat-label">Expired Memberships</div>
+                </div>
+                <i class="bi bi-person-x stat-icon text-danger"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Attendance -->
+<div class="table-card">
+    <div class="table-card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-clock-history me-2 text-warning"></i>Recent Attendance</span>
+        <a href="{{ url_for('admin.attendance') }}" class="text-muted small text-decoration-none">
+            View all <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+
+    {% if recent_logs %}
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Member</th>
+                    <th>Membership ID</th>
+                    <th>Check In</th>
+                    <th>Check Out</th>
+                    <th>Duration</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in recent_logs %}
+                <tr>
+                    <td>{{ log.member.full_name }}</td>
+                    <td><span class="text-muted">{{ log.member.membership_id }}</span></td>
+                    <td>{{ log.check_in_time.strftime('%I:%M %p') }}</td>
+                    <td>
+                        {% if log.check_out_time %}
+                            {{ log.check_out_time.strftime('%I:%M %p') }}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if log.duration_minutes %}
+                            {% set h = log.duration_minutes // 60 %}
+                            {% set m = log.duration_minutes % 60 %}
+                            {% if h > 0 %}{{ h }}h {{ m }}m{% else %}{{ m }}m{% endif %}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if log.is_active() %}
+                            <span class="badge-active"><i class="bi bi-circle-fill me-1" style="font-size:0.5rem"></i>Active</span>
+                        {% else %}
+                            <span class="badge-done"><i class="bi bi-check me-1"></i>Done</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5 text-muted">
+        <i class="bi bi-calendar-x" style="font-size:2rem"></i>
+        <p class="mt-2">No attendance records yet.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
