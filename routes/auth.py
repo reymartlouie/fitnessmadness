@@ -24,6 +24,8 @@ def login():
             login_user(admin)
             session.permanent = True
             next_page = request.args.get('next')
+            if next_page and not next_page.startswith('/'):
+                next_page = None
             flash(f'Welcome back, {admin.username}!', 'success')
             return redirect(next_page or url_for('admin.dashboard'))
         else:
