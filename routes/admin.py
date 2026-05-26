@@ -5,7 +5,7 @@ from flask_login import login_required
 from models.member import Member, MembershipType, MEMBERSHIP_PRICES
 from models.attendance import Attendance
 from extensions import db
-from datetime import date, datetime
+from datetime import date, datetime, time
 from dateutil.relativedelta import relativedelta
 
 admin_bp = Blueprint('admin', __name__)
@@ -26,6 +26,18 @@ def dashboard():
     if stale_members:
         for m in stale_members:
             m.is_active = False
+        db.session.commit()
+
+    # Auto-close sessions from previous days that never got a check-out
+    # (member left without using the kiosk). Close at 23:59 of that day.
+    stale_sessions = Attendance.query.filter(
+        Attendance.attendance_date < today,
+        Attendance.check_out_time == None
+    ).all()
+    if stale_sessions:
+        for s in stale_sessions:
+            s.check_out_time = datetime.combine(s.attendance_date, time(23, 59, 0))
+            s.calculate_duration()
         db.session.commit()
 
     total_checkins_today = Attendance.query.filter_by(attendance_date=today).count()
