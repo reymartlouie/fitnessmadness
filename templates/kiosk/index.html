@@ -278,8 +278,13 @@
                 </h5>
                 <form method="POST" action="{{ url_for('kiosk.my_records') }}">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" name="full_name" class="form-control"
+                               placeholder="e.g. Juan dela Cruz" required autocomplete="off">
+                    </div>
                     <div class="mb-4">
-                        <label class="form-label">Enter Your Membership ID</label>
+                        <label class="form-label">Membership ID</label>
                         <input type="text" name="membership_id" class="form-control"
                                placeholder="e.g. GM001" required autocomplete="off"
                                value="{{ looked_up_member.membership_id if looked_up_member else '' }}">

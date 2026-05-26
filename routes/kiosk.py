@@ -15,15 +15,16 @@ def index():
 @kiosk_bp.route('/my-records', methods=['POST'])
 def my_records():
     membership_id = request.form.get('membership_id', '').strip()
+    full_name = request.form.get('full_name', '').strip()
 
-    if not membership_id:
-        flash('Please enter your membership ID.', 'danger')
+    if not membership_id or not full_name:
+        flash('Please enter both your name and membership ID.', 'danger')
         return render_template('kiosk/index.html', member_records=None, looked_up_member=None, active_tab='records')
 
     member = Member.query.filter_by(membership_id=membership_id).first()
 
-    if not member:
-        flash('Membership ID not found. Please see the front desk.', 'danger')
+    if not member or member.full_name.lower() != full_name.lower():
+        flash('Name and Membership ID do not match. Please see the front desk.', 'danger')
         return render_template('kiosk/index.html', member_records=None, looked_up_member=None, active_tab='records')
 
     records = Attendance.query.filter_by(
