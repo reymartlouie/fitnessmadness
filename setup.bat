@@ -7,15 +7,28 @@ echo   FitnessMadness Gym System - First Setup
 echo ============================================
 echo.
 
+:: ── Unblock all files (removes Windows SmartScreen warnings) ──────────
+powershell -Command "Get-ChildItem -Path '%~dp0' -Recurse | Unblock-File" >nul 2>&1
+echo [OK] Files unblocked.
+
 :: ── Step 1: Check Python ─────────────────────────────────────────────
+set PYTHON=
 python --version >nul 2>&1
-if errorlevel 1 (
-    echo [ERROR] Python is not installed or not in PATH.
-    echo Please download and install Python 3.10+ from https://www.python.org
-    echo Make sure to check "Add Python to PATH" during installation.
-    pause
-    exit /b 1
+if not errorlevel 1 (
+    set PYTHON=python
+    goto python_found
 )
+py --version >nul 2>&1
+if not errorlevel 1 (
+    set PYTHON=py
+    goto python_found
+)
+echo [ERROR] Python is not installed or not in PATH.
+echo Please download and install Python 3.10+ from https://www.python.org
+echo Make sure to check "Add Python to PATH" during installation.
+pause
+exit /b 1
+:python_found
 echo [OK] Python found.
 
 :: ── Step 2: Check Git ────────────────────────────────────────────────
@@ -30,7 +43,7 @@ if errorlevel 1 (
 :: ── Step 3: Create virtual environment ───────────────────────────────
 if not exist venv (
     echo Creating virtual environment...
-    python -m venv venv
+    %PYTHON% -m venv venv
     if errorlevel 1 (
         echo [ERROR] Failed to create virtual environment.
         pause
@@ -59,7 +72,7 @@ if not exist .env (
     set /p GYM_NAME="Enter your gym name (e.g. Iron Gym): "
     if "%GYM_NAME%"=="" set GYM_NAME=My Gym
 
-    python -c "import secrets; print(secrets.token_hex(32))" > _key.tmp
+    %PYTHON% -c "import secrets; print(secrets.token_hex(32))" > _key.tmp
     set /p SECRET_KEY=<_key.tmp
     del _key.tmp
 
@@ -76,7 +89,7 @@ if not exist .env (
 :: ── Step 6: Initialize database ──────────────────────────────────────
 if not exist database\fitnessmadness.db (
     echo Initializing database...
-    python database\init_db.py
+    %PYTHON% database\init_db.py
     echo [OK] Database created.
 ) else (
     echo [OK] Database already exists.
@@ -84,12 +97,12 @@ if not exist database\fitnessmadness.db (
 
 :: ── Step 7: Run migrations ────────────────────────────────────────────
 echo Applying schema updates...
-python database\migrate.py
+%PYTHON% database\migrate.py
 
 :: ── Step 8: Create admin account ─────────────────────────────────────
 echo.
 echo Creating admin account...
-python database\create_admin.py
+%PYTHON% database\create_admin.py
 
 :: ── Step 9: Register auto-start with Windows Task Scheduler ──────────
 echo.
@@ -108,6 +121,12 @@ if errorlevel 1 (
 ) else (
     echo [OK] Auto-start already registered.
 )
+
+:: ── Step 10: Create desktop shortcut ──────────────────────────────────
+echo.
+echo Creating desktop shortcut...
+powershell -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut([Environment]::GetFolderPath('Desktop') + '\FitnessMadness Kiosk.lnk'); $s.TargetPath = '%~dp0start.bat'; $s.WorkingDirectory = '%~dp0'; $s.IconLocation = 'shell32.dll,137'; $s.Description = 'Launch FitnessMadness Kiosk'; $s.Save()"
+echo [OK] Desktop shortcut created. Double-click it anytime to relaunch the kiosk.
 
 :: ── Done ──────────────────────────────────────────────────────────────
 echo.
