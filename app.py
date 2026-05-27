@@ -31,6 +31,10 @@ def create_app():
     def load_user(user_id):
         return Admin.query.get(int(user_id))
 
+    @app.context_processor
+    def inject_gym_name():
+        return {'gym_name': app.config['GYM_NAME']}
+
     return app
 
 

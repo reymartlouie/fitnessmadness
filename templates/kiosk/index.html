@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitnessMadness — Kiosk</title>
+    <title>{{ gym_name }} — Kiosk</title>
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/bootstrap-icons.min.css') }}" rel="stylesheet">
     <style>
@@ -185,7 +185,7 @@
 
         <!-- Header -->
         <div class="text-center mb-4">
-            <div class="brand">FitnessMadness</div>
+            <div class="brand">{{ gym_name }}</div>
             <div class="clock mt-2" id="clock">--:--:--</div>
             <div class="date-display" id="date-display">Loading...</div>
         </div>

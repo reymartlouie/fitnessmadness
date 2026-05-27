@@ -23,3 +23,4 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     WTF_CSRF_ENABLED = True
     PERMANENT_SESSION_LIFETIME = 1800  # 30 minutes admin auto-logout
+    GYM_NAME = os.environ.get('GYM_NAME', 'FitnessMadness')

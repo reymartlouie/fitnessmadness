@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Admin{% endblock %} — FitnessMadness</title>
+    <title>{% block title %}Admin{% endblock %} — {{ gym_name }}</title>
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/bootstrap-icons.min.css') }}" rel="stylesheet">
     <style>
@@ -250,7 +250,7 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-brand">
-            FitnessMadness
+            {{ gym_name }}
             <span>Admin Panel</span>
         </div>
 

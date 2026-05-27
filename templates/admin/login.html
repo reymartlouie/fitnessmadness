@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login — FitnessMadness</title>
+    <title>Admin Login — {{ gym_name }}</title>
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/bootstrap-icons.min.css') }}" rel="stylesheet">
     <style>
@@ -81,7 +81,7 @@
 <body>
     <div class="login-card">
         <div class="text-center mb-4">
-            <div class="brand">FitnessMadness</div>
+            <div class="brand">{{ gym_name }}</div>
             <h2 class="mt-2">Admin Login</h2>
             <p class="text-muted small">Sign in to access the dashboard</p>
         </div>
