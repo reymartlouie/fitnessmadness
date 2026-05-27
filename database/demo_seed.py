@@ -40,9 +40,9 @@ LAST_NAMES = [
 ]
 
 MEMBERSHIP_FEES = {
-    MembershipType.REGULAR: 1000,
-    MembershipType.STUDENT: 600,
-    MembershipType.SENIOR: 500,
+    MembershipType.REGULAR: 850,
+    MembershipType.STUDENT: 650,
+    MembershipType.SENIOR: 850,
 }
 
 
