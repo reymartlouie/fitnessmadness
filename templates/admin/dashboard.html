@@ -57,6 +57,75 @@
     </div>
 </div>
 
+<!-- Expiring Soon Alert -->
+{% if expiring_soon %}
+<div class="table-card mb-4">
+    <div class="table-card-header d-flex justify-content-between align-items-center"
+         style="background: rgba(255,193,7,0.08); border-bottom: 1px solid rgba(255,193,7,0.2);">
+        <span>
+            <i class="bi bi-exclamation-triangle-fill me-2 text-warning"></i>
+            Memberships Expiring Within 7 Days
+        </span>
+        <span class="badge bg-warning text-dark">{{ expiring_soon|length }}</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Member</th>
+                    <th>Contact</th>
+                    <th>Type</th>
+                    <th>Expires</th>
+                    <th>Days Left</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in expiring_soon %}
+                <tr>
+                    <td>
+                        <div class="fw-semibold">{{ member.full_name }}</div>
+                        <div class="text-muted small">{{ member.membership_id }}</div>
+                    </td>
+                    <td>
+                        {% if member.phone %}
+                            <div class="small"><i class="bi bi-telephone me-1 text-muted"></i>{{ member.phone }}</div>
+                        {% endif %}
+                        {% if member.email %}
+                            <div class="small"><i class="bi bi-envelope me-1 text-muted"></i>{{ member.email }}</div>
+                        {% endif %}
+                        {% if not member.phone and not member.email %}
+                            <span class="text-muted small">No contact info</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ member.membership_type.capitalize() }}</td>
+                    <td>{{ member.membership_end.strftime('%b %d, %Y') }}</td>
+                    <td>
+                        {% set days = member.days_remaining() %}
+                        {% if days == 0 %}
+                            <span class="text-danger fw-bold">Today</span>
+                        {% elif days == 1 %}
+                            <span class="text-danger fw-bold">1 day</span>
+                        {% else %}
+                            <span class="text-warning fw-bold">{{ days }} days</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form method="POST" action="{{ url_for('admin.renew_member', member_id=member.id) }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-warning btn-sm px-3">
+                                <i class="bi bi-arrow-repeat me-1"></i>Renew
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
 <!-- Recent Attendance -->
 <div class="table-card">
     <div class="table-card-header d-flex justify-content-between align-items-center">

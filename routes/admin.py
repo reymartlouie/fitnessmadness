@@ -50,6 +50,14 @@ def dashboard():
     total_members = Member.query.count()
     expired_members = Member.query.filter_by(is_active=False).count()
 
+    from datetime import timedelta
+    alert_window = today + timedelta(days=7)
+    expiring_soon = Member.query.filter(
+        Member.is_active == True,
+        Member.membership_end >= today,
+        Member.membership_end <= alert_window
+    ).order_by(Member.membership_end.asc()).all()
+
     recent_logs = Attendance.query.order_by(
         Attendance.check_in_time.desc()
     ).limit(10).all()
@@ -59,6 +67,7 @@ def dashboard():
         active_members=active_members,
         total_members=total_members,
         expired_members=expired_members,
+        expiring_soon=expiring_soon,
         recent_logs=recent_logs,
         today=today
     )
