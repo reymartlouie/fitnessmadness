@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>FitnessMadness — DFD</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f4f4;
+      color: #111;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 50px;
+    }
+
+    .section {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 30px 40px;
+      margin-bottom: 40px;
+      max-width: 960px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #444;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 10px;
+      margin-bottom: 24px;
+    }
+
+    .diagram-wrap {
+      display: flex;
+      justify-content: center;
+      overflow-x: auto;
+    }
+
+    .legend {
+      margin-top: 20px;
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: #555;
+      justify-content: center;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend-box {
+      width: 28px;
+      height: 18px;
+      border: 1.5px solid #555;
+      border-radius: 2px;
+      background: #f9f9f9;
+    }
+
+    .legend-circle {
+      width: 24px;
+      height: 24px;
+      border: 1.5px solid #555;
+      border-radius: 50%;
+      background: #f9f9f9;
+    }
+
+    .legend-store {
+      width: 32px;
+      height: 18px;
+      border-top: 1.5px solid #555;
+      border-bottom: 1.5px solid #555;
+      background: #f9f9f9;
+    }
+
+    .notice {
+      text-align: center;
+      font-size: 11px;
+      color: #aaa;
+      margin-top: 30px;
+    }
+
+    @media print {
+      body { background: white; padding: 20px; }
+      .section { border: 1px solid #ccc; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>FitnessMadness Gym System</h1>
+  <div class="subtitle">Data Flow Diagrams — Context Diagram &amp; Level 1</div>
+
+  <!-- ── Context Diagram ─────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-title">Context Diagram (Level 0)</div>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+%%{init: {'theme': 'neutral', 'flowchart': {'curve': 'linear'}}}%%
+flowchart LR
+    Member["👤 Member"]
+    Admin["🛡️ Admin / Owner"]
+    Sys(["⚙️ FitnessMadness\nGym System"])
+
+    Member -->|"Name + Membership ID\nCheck-in / Check-out Request\nView Records Request"| Sys
+    Sys -->|"Attendance Confirmation\nSession Records\nMembership Status"| Member
+
+    Admin -->|"Login Credentials\nMember Details\nPayment Data\nRenewal Requests"| Sys
+    Sys -->|"Dashboard & Reports\nExpiry Alerts\nAttendance Logs\nCSV Exports"| Admin
+
+    style Member fill:#e8f4fd,stroke:#2980b9,color:#111
+    style Admin fill:#eafaf1,stroke:#27ae60,color:#111
+    style Sys fill:#fff3e0,stroke:#e67e22,color:#111
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-box"></div> External Entity</div>
+      <div class="legend-item"><div class="legend-circle"></div> Process</div>
+      <div class="legend-item">→ Data Flow</div>
+    </div>
+  </div>
+
+  <!-- ── DFD Level 1 ─────────────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-title">DFD Level 1 — Main Processes</div>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+%%{init: {'theme': 'neutral', 'flowchart': {'curve': 'linear'}}}%%
+flowchart TD
+    Member["👤 Member"]
+    Admin["🛡️ Admin / Owner"]
+
+    P1(["1.0\nVerify Member"])
+    P2(["2.0\nRecord Attendance"])
+    P3(["3.0\nManage Members"])
+    P4(["4.0\nRecord Payments"])
+    P5(["5.0\nGenerate Reports"])
+    P6(["6.0\nAuthenticate Admin"])
+
+    D1[("D1 — Members")]
+    D2[("D2 — Attendance Logs")]
+    D3[("D3 — Payments")]
+    D4[("D4 — Admin Accounts")]
+
+    %% Member flows
+    Member -->|"Name + ID"| P1
+    P1 <-->|"Lookup / Verify"| D1
+    P1 -->|"Verified Member"| P2
+    P2 -->|"Check-in / Check-out Record"| D2
+    D2 -->|"Confirmation"| Member
+    Member -->|"View Records Request"| P2
+
+    %% Admin auth
+    Admin -->|"Credentials"| P6
+    P6 <-->|"Verify Credentials"| D4
+
+    %% Admin → processes
+    P6 -->|"Authenticated Session"| P3
+    P6 -->|"Authenticated Session"| P4
+    P6 -->|"Authenticated Session"| P5
+
+    %% Member management
+    Admin -->|"Member Details"| P3
+    P3 <-->|"Add / Edit / Delete"| D1
+
+    %% Payments
+    Admin -->|"Payment Amount"| P4
+    P4 -->|"Payment Record"| D3
+    P4 -->|"Renew Membership"| D1
+
+    %% Reports
+    D1 -->|"Member Data"| P5
+    D2 -->|"Attendance Data"| P5
+    D3 -->|"Payment Data"| P5
+    P5 -->|"CSV Export / Reports / Alerts"| Admin
+
+    style Member fill:#e8f4fd,stroke:#2980b9,color:#111
+    style Admin fill:#eafaf1,stroke:#27ae60,color:#111
+    style P1 fill:#fff3e0,stroke:#e67e22,color:#111
+    style P2 fill:#fff3e0,stroke:#e67e22,color:#111
+    style P3 fill:#fff3e0,stroke:#e67e22,color:#111
+    style P4 fill:#fff3e0,stroke:#e67e22,color:#111
+    style P5 fill:#fff3e0,stroke:#e67e22,color:#111
+    style P6 fill:#fff3e0,stroke:#e67e22,color:#111
+    style D1 fill:#f5eef8,stroke:#8e44ad,color:#111
+    style D2 fill:#f5eef8,stroke:#8e44ad,color:#111
+    style D3 fill:#f5eef8,stroke:#8e44ad,color:#111
+    style D4 fill:#f5eef8,stroke:#8e44ad,color:#111
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-box" style="background:#e8f4fd;border-color:#2980b9"></div> External Entity</div>
+      <div class="legend-item"><div class="legend-circle" style="background:#fff3e0;border-color:#e67e22"></div> Process</div>
+      <div class="legend-item"><div class="legend-box" style="background:#f5eef8;border-color:#8e44ad;border-radius:50%"></div> Data Store</div>
+      <div class="legend-item">→ Data Flow</div>
+    </div>
+  </div>
+
+  <div class="notice">FitnessMadness Gym Attendance System &mdash; System Documentation</div>
+
+  <script>
+    mermaid.initialize({ startOnLoad: true, securityLevel: 'loose' });
+  </script>
+</body>
+</html>
