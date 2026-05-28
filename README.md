@@ -1,7 +1,6 @@
 # FitnessMadness — Gym Attendance Management System
 
-A local kiosk-based gym attendance system. Runs entirely on one PC.
-No internet required. No monthly fees.
+FitnessMadness is a lightweight gym management system that runs on a local Windows PC. It features a member-facing kiosk for check-in and check-out, and an admin dashboard for managing members, tracking attendance, recording payments, and exporting data to CSV. No internet required. Auto-starts on Windows login.
 
 ---
 
