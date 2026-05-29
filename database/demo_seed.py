@@ -65,7 +65,7 @@ def seed_demo(app):
     with app.app_context():
         added = 0
 
-        for i in range(1, 501):
+        for i in range(1, 276):
             mid = f'DEMO{i:04d}'
             if Member.query.filter_by(membership_id=mid).first():
                 continue
