@@ -1,0 +1,78 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Renew Membership{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center gap-3 mb-4">
+    <a href="{{ url_for('admin.members') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>Back
+    </a>
+    <div>
+        <div class="page-title">Renew Membership</div>
+        <div class="page-subtitle">Choose renewal billing date</div>
+    </div>
+</div>
+
+<div style="max-width: 540px;">
+    <div class="table-card p-4">
+
+        <!-- Member summary -->
+        <div class="mb-4 p-3" style="background:#1e1e1e; border-radius:12px; border:1px solid #2a2a2a;">
+            <div class="fw-bold fs-5 mb-1">{{ member.full_name }}</div>
+            <div class="text-muted small">
+                {{ member.membership_id }} &middot; {{ member.membership_type.capitalize() }} &middot;
+                Expired {{ member.membership_end.strftime('%b %d, %Y') }}
+            </div>
+        </div>
+
+        <div class="alert alert-warning d-flex align-items-start gap-2 mb-4">
+            <i class="bi bi-exclamation-triangle-fill mt-1"></i>
+            <div>
+                This membership expired more than <strong>7 days ago</strong>.
+                Choose how to bill the renewal.
+            </div>
+        </div>
+
+        <!-- Option A: Continue from original end date -->
+        <form method="POST" action="{{ url_for('admin.renew_member', member_id=member.id) }}" class="mb-3">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="from_today" value="0">
+            <div class="p-3 mb-2" style="background:#1e1e1e; border:1px solid #2a2a2a; border-radius:12px;">
+                <div class="fw-semibold mb-1">
+                    <i class="bi bi-calendar-check me-2 text-warning"></i>Continue from original expiry
+                </div>
+                <div class="text-muted small mb-3">
+                    New expiry: <strong class="text-white">
+                        {{ (member.membership_end + relativedelta(months=1)).strftime('%b %d, %Y') }}
+                    </strong>
+                    &mdash; keeps the member's billing cycle unchanged.
+                </div>
+                <button type="submit" class="btn btn-warning btn-sm px-4">
+                    Renew from {{ member.membership_end.strftime('%b %d') }}
+                </button>
+            </div>
+        </form>
+
+        <!-- Option B: Start fresh from today -->
+        <form method="POST" action="{{ url_for('admin.renew_member', member_id=member.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="from_today" value="1">
+            <div class="p-3" style="background:#1e1e1e; border:1px solid #2a2a2a; border-radius:12px;">
+                <div class="fw-semibold mb-1">
+                    <i class="bi bi-calendar-plus me-2 text-info"></i>Start fresh from today
+                </div>
+                <div class="text-muted small mb-3">
+                    New expiry: <strong class="text-white">
+                        {{ (today + relativedelta(months=1)).strftime('%b %d, %Y') }}
+                    </strong>
+                    &mdash; resets billing cycle to today's date.
+                </div>
+                <button type="submit" class="btn btn-outline-info btn-sm px-4">
+                    Renew from today
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

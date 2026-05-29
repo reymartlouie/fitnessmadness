@@ -303,16 +303,25 @@ def edit_member(member_id):
         membership_types=MembershipType.ALL, prices=MEMBERSHIP_PRICES)
 
 
-@admin_bp.route('/members/<int:member_id>/renew', methods=['POST'])
+@admin_bp.route('/members/<int:member_id>/renew', methods=['GET', 'POST'])
 @login_required
 def renew_member(member_id):
     member = Member.query.get_or_404(member_id)
+    today = date.today()
+    past_grace = member.membership_end < today - relativedelta(days=member.GRACE_DAYS)
+
+    if request.method == 'GET' and past_grace:
+        # Show choice page only if past the 7-day grace period
+        return render_template('admin/renew_confirm.html', member=member,
+                               today=today, relativedelta=relativedelta)
+
+    from_today = request.form.get('from_today') == '1'
     amount = member.get_monthly_fee()
-    member.renew()
+    member.renew(from_today=from_today)
     payment = Payment(
         member_id=member.id,
         amount=amount,
-        payment_date=date.today(),
+        payment_date=today,
         recorded_at=datetime.now(),
         notes=f'{member.membership_type.capitalize()} membership renewal'
     )

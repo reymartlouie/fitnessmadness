@@ -37,11 +37,28 @@ class Member(db.Model):
     def get_monthly_fee(self):
         return MEMBERSHIP_PRICES.get(self.membership_type, MEMBERSHIP_PRICES[MembershipType.REGULAR])
 
-    def renew(self):
-        """Extend membership by 1 month from today or from current end date if still valid."""
-        base = self.membership_end if self.membership_end and self.membership_end >= date.today() else date.today()
+    GRACE_DAYS = 7
+
+    def is_within_grace(self):
+        """True if expired but still within the 7-day grace period."""
+        today = date.today()
+        return self.membership_end < today <= self.membership_end + relativedelta(days=self.GRACE_DAYS)
+
+    def renew(self, from_today=False):
+        """
+        Renew membership by 1 month.
+
+        - Still active or within 7-day grace → continue from original end date.
+        - Past grace period and from_today=False → continue from original end date.
+        - Past grace period and from_today=True  → start fresh from today.
+        """
+        today = date.today()
+        if from_today:
+            base = today
+        else:
+            base = self.membership_end if self.membership_end else today
         self.membership_end = base + relativedelta(months=1)
-        self.membership_start = date.today()
+        self.membership_start = today
         self.is_active = True
 
     def check_expiry(self):
