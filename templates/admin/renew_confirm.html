@@ -43,12 +43,12 @@
                 </div>
                 <div class="text-muted small mb-3">
                     New expiry: <strong class="text-white">
-                        {{ (member.membership_end + relativedelta(months=1)).strftime('%b %d, %Y') }}
+                        {{ next_billing.strftime('%b %d, %Y') }}
                     </strong>
-                    &mdash; keeps the member's billing cycle unchanged.
+                    &mdash; keeps their billing day ({{ member.membership_end.strftime('%d') }}th) unchanged.
                 </div>
                 <button type="submit" class="btn btn-warning btn-sm px-4">
-                    Renew from {{ member.membership_end.strftime('%b %d') }}
+                    Renew to {{ next_billing.strftime('%b %d') }}
                 </button>
             </div>
         </form>

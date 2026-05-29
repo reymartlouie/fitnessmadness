@@ -311,13 +311,22 @@ def renew_member(member_id):
     past_grace = member.membership_end < today - relativedelta(days=member.GRACE_DAYS)
 
     if past_grace and 'from_today' not in request.form:
-        # Show choice page if past grace and no explicit billing choice made yet
+        # Calculate next billing date (keeps billing day, next occurrence after today)
+        billing_day = member.membership_end.day
+        try:
+            next_billing = today.replace(day=billing_day)
+        except ValueError:
+            next_billing = (today + relativedelta(months=1)).replace(day=1)
+        if next_billing <= today:
+            next_billing += relativedelta(months=1)
         return render_template('admin/renew_confirm.html', member=member,
-                               today=today, relativedelta=relativedelta)
+                               today=today, next_billing=next_billing,
+                               relativedelta=relativedelta)
 
     from_today = request.form.get('from_today') == '1'
+    keep_billing_day = past_grace and not from_today
     amount = member.get_monthly_fee()
-    member.renew(from_today=from_today)
+    member.renew(from_today=from_today, keep_billing_day=keep_billing_day)
     payment = Payment(
         member_id=member.id,
         amount=amount,

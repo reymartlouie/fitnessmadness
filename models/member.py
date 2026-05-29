@@ -44,20 +44,30 @@ class Member(db.Model):
         today = date.today()
         return self.membership_end < today <= self.membership_end + relativedelta(days=self.GRACE_DAYS)
 
-    def renew(self, from_today=False):
+    def renew(self, from_today=False, keep_billing_day=False):
         """
         Renew membership by 1 month.
 
-        - Still active or within 7-day grace → continue from original end date.
-        - Past grace period and from_today=False → continue from original end date.
-        - Past grace period and from_today=True  → start fresh from today.
+        - Active or within grace → extend from current end date.
+        - Past grace, keep_billing_day=True → preserve billing day, next occurrence after today.
+          e.g. expired Feb 28, today is May 29 → new end = June 28.
+        - Past grace, from_today=True → start fresh from today.
         """
         today = date.today()
-        if from_today:
-            base = today
+        if keep_billing_day:
+            billing_day = self.membership_end.day
+            try:
+                candidate = today.replace(day=billing_day)
+            except ValueError:
+                candidate = (today + relativedelta(months=1)).replace(day=1)
+            if candidate <= today:
+                candidate += relativedelta(months=1)
+            self.membership_end = candidate
+        elif from_today:
+            self.membership_end = today + relativedelta(months=1)
         else:
-            base = self.membership_end if self.membership_end else today
-        self.membership_end = base + relativedelta(months=1)
+            base = self.membership_end if self.membership_end and self.membership_end >= today else today
+            self.membership_end = base + relativedelta(months=1)
         self.membership_start = today
         self.is_active = True
 
