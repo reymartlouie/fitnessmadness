@@ -310,8 +310,8 @@ def renew_member(member_id):
     today = date.today()
     past_grace = member.membership_end < today - relativedelta(days=member.GRACE_DAYS)
 
-    if request.method == 'GET' and past_grace:
-        # Show choice page only if past the 7-day grace period
+    if past_grace and 'from_today' not in request.form:
+        # Show choice page if past grace and no explicit billing choice made yet
         return render_template('admin/renew_confirm.html', member=member,
                                today=today, relativedelta=relativedelta)
 
