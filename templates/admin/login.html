@@ -129,6 +129,24 @@
             border-color: var(--accent);
             color: var(--accent);
         }
+        .pw-wrap { position: relative; display: block; }
+        .pw-wrap input { padding-right: 2.75rem !important; }
+        .pw-eye {
+            position: absolute;
+            right: 0.8rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-subtle);
+            cursor: pointer;
+            padding: 0.2rem;
+            font-size: 1rem;
+            line-height: 1;
+            transition: color 0.15s;
+            z-index: 5;
+        }
+        .pw-eye:hover { color: var(--accent); }
     </style>
 </head>
 <body>
@@ -204,6 +222,24 @@
             if (icon) icon.className = theme === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
         }
         updateThemeIcon(document.documentElement.getAttribute('data-theme') || 'light');
+
+        document.querySelectorAll('input[type="password"]').forEach(function(inp) {
+            var wrap = document.createElement('div');
+            wrap.className = 'pw-wrap';
+            inp.parentNode.insertBefore(wrap, inp);
+            wrap.appendChild(inp);
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'pw-eye';
+            btn.setAttribute('aria-label', 'Toggle visibility');
+            btn.innerHTML = '<i class="bi bi-eye"></i>';
+            wrap.appendChild(btn);
+            btn.addEventListener('click', function() {
+                var show = inp.type === 'password';
+                inp.type = show ? 'text' : 'password';
+                btn.innerHTML = '<i class="bi bi-eye' + (show ? '-slash' : '') + '"></i>';
+            });
+        });
     </script>
 </body>
 </html>
