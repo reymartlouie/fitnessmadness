@@ -81,10 +81,20 @@
 
             <div class="mb-3">
                 <label class="form-label">{{ 'New PIN' if current_user.backup_pin_hash else 'Set a PIN' }}</label>
-                <input type="password" name="backup_pin" class="form-control"
+                <input type="password" name="backup_pin" id="newPin" class="form-control"
                        placeholder="4–8 digits"
-                       inputmode="numeric" maxlength="8" pattern="\d{4,8}" required>
+                       inputmode="numeric" maxlength="8" pattern="\d{4,8}"
+                       required oninput="checkPinMatch()">
                 <div class="form-text">4 to 8 digits. Keep this separate from your password.</div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Confirm New PIN</label>
+                <input type="password" name="confirm_pin" id="confirmPin" class="form-control"
+                       placeholder="Re-enter PIN"
+                       inputmode="numeric" maxlength="8"
+                       required oninput="checkPinMatch()">
+                <div id="pin-match-msg" class="mt-1" style="font-size:0.82rem;"></div>
             </div>
 
             <button type="submit" class="btn px-4"
@@ -94,4 +104,35 @@
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function checkPinMatch() {
+        const np  = document.getElementById('newPin');
+        const cp  = document.getElementById('confirmPin');
+        const msg = document.getElementById('pin-match-msg');
+        if (!np || !cp || !msg) return;
+        if (!cp.value) { msg.textContent = ''; return; }
+        if (np.value === cp.value) {
+            msg.style.color = 'var(--accent)';
+            msg.innerHTML = '<i class="bi bi-check-circle me-1"></i>PINs match';
+        } else {
+            msg.style.color = '#e5383b';
+            msg.innerHTML = '<i class="bi bi-x-circle me-1"></i>PINs do not match';
+        }
+    }
+
+    document.querySelectorAll('form').forEach(form => {
+        const np = form.querySelector('#newPin');
+        if (!np) return;
+        form.addEventListener('submit', function(e) {
+            const cp = form.querySelector('#confirmPin');
+            if (cp && np.value !== cp.value) {
+                e.preventDefault();
+                cp.focus();
+            }
+        });
+    });
+</script>
 {% endblock %}

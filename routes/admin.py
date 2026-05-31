@@ -447,12 +447,16 @@ def profile():
     if request.method == 'POST':
         email    = request.form.get('email', '').strip()
         phone    = request.form.get('phone', '').strip()
-        new_pin  = request.form.get('backup_pin', '').strip()
-        cur_pin  = request.form.get('current_pin', '').strip()
+        new_pin     = request.form.get('backup_pin', '').strip()
+        confirm_pin = request.form.get('confirm_pin', '').strip()
+        cur_pin     = request.form.get('current_pin', '').strip()
 
         if new_pin:
             if not new_pin.isdigit() or not (4 <= len(new_pin) <= 8):
                 flash('Backup PIN must be 4–8 digits.', 'danger')
+                return render_template('admin/profile.html')
+            if new_pin != confirm_pin:
+                flash('PINs do not match. Please enter the new PIN twice.', 'danger')
                 return render_template('admin/profile.html')
             if current_user.backup_pin_hash and not current_user.check_backup_pin(cur_pin):
                 flash('Current PIN is incorrect.', 'danger')
