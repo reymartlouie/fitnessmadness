@@ -13,8 +13,9 @@ from extensions import db
 MIGRATIONS = [
     ("members", "phone",  "ALTER TABLE members ADD COLUMN phone VARCHAR(20)"),
     ("members", "email",  "ALTER TABLE members ADD COLUMN email VARCHAR(120)"),
-    ("admins",  "email",  "ALTER TABLE admins ADD COLUMN email VARCHAR(120)"),
-    ("admins",  "phone",  "ALTER TABLE admins ADD COLUMN phone VARCHAR(20)"),
+    ("admins",  "email",           "ALTER TABLE admins ADD COLUMN email VARCHAR(120)"),
+    ("admins",  "phone",           "ALTER TABLE admins ADD COLUMN phone VARCHAR(20)"),
+    ("admins",  "backup_pin_hash", "ALTER TABLE admins ADD COLUMN backup_pin_hash VARCHAR(255)"),
 ]
 
 CREATE_TABLES = [

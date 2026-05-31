@@ -1,46 +1,14 @@
 import csv
 import io
 import re
-import random
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from datetime import date, datetime, time, timedelta
-from flask import Blueprint, render_template, request, Response, redirect, url_for, flash, session, current_app
+from datetime import date, datetime, time
+from flask import Blueprint, render_template, request, Response, redirect, url_for, flash
 from flask_login import login_required, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
 from models.member import Member, MembershipType, MEMBERSHIP_PRICES
 from models.attendance import Attendance
 from models.payment import Payment
 from extensions import db
 from dateutil.relativedelta import relativedelta
-
-
-def _send_otp_email(to_email, otp, gym_name):
-    username = current_app.config.get('MAIL_USERNAME', '')
-    password = current_app.config.get('MAIL_PASSWORD', '')
-    if not username or not password:
-        return False, 'Mail credentials not configured in .env (MAIL_USERNAME / MAIL_PASSWORD).'
-    try:
-        msg = MIMEMultipart('alternative')
-        msg['Subject'] = f'{gym_name} — Verification Code'
-        msg['From'] = username
-        msg['To'] = to_email
-        body = (
-            f'Your verification code is:\n\n'
-            f'  {otp}\n\n'
-            f'This code expires in 10 minutes.\n'
-            f'If you did not request this, ignore this email.'
-        )
-        msg.attach(MIMEText(body, 'plain'))
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=10) as server:
-            server.login(username, password)
-            server.sendmail(username, to_email, msg.as_string())
-        return True, None
-    except smtplib.SMTPAuthenticationError:
-        return False, 'Gmail authentication failed. Check MAIL_PASSWORD — use a Google App Password, not your login password.'
-    except Exception as e:
-        return False, f'Could not send email: {e}'
 
 
 def _validate_password(password):
@@ -477,86 +445,66 @@ def delete_member(member_id):
 @login_required
 def profile():
     if request.method == 'POST':
-        email = request.form.get('email', '').strip()
-        phone = request.form.get('phone', '').strip()
+        email    = request.form.get('email', '').strip()
+        phone    = request.form.get('phone', '').strip()
+        new_pin  = request.form.get('backup_pin', '').strip()
+        cur_pin  = request.form.get('current_pin', '').strip()
+
+        if new_pin:
+            if not new_pin.isdigit() or not (4 <= len(new_pin) <= 8):
+                flash('Backup PIN must be 4–8 digits.', 'danger')
+                return render_template('admin/profile.html')
+            if current_user.backup_pin_hash and not current_user.check_backup_pin(cur_pin):
+                flash('Current PIN is incorrect.', 'danger')
+                return render_template('admin/profile.html')
+            current_user.set_backup_pin(new_pin)
+            flash('Backup PIN updated.', 'success')
+
         current_user.email = email or None
         current_user.phone = phone or None
         db.session.commit()
-        flash('Profile updated.', 'success')
+        if not new_pin:
+            flash('Profile saved.', 'success')
         return redirect(url_for('admin.profile'))
+
     return render_template('admin/profile.html')
 
 
 @admin_bp.route('/change-password', methods=['GET', 'POST'])
 @login_required
 def change_password():
-    has_email = bool(current_user.email)
-    mail_ok   = bool(current_app.config.get('MAIL_USERNAME') and current_app.config.get('MAIL_PASSWORD'))
-    use_otp   = has_email and mail_ok
+    has_pin = bool(current_user.backup_pin_hash)
 
-    # Step 1 — verify current password and send OTP
-    if request.method == 'POST' and request.form.get('action') == 'send_code':
+    if request.method == 'POST':
         current_pw = request.form.get('current_password', '').strip()
-        if not current_user.check_password(current_pw):
-            flash('Current password is incorrect.', 'danger')
-            return render_template('admin/change_password.html', phase=1, use_otp=use_otp)
-
-        otp = str(random.randint(100000, 999999))
-        ok, err = _send_otp_email(current_user.email, otp, current_app.config['GYM_NAME'])
-        if not ok:
-            flash(err, 'danger')
-            return render_template('admin/change_password.html', phase=1, use_otp=use_otp)
-
-        session['pw_otp']     = generate_password_hash(otp)
-        session['pw_otp_exp'] = (datetime.utcnow() + timedelta(minutes=10)).isoformat()
-        flash(f'A 6-digit code was sent to {current_user.email}. It expires in 10 minutes.', 'success')
-        return render_template('admin/change_password.html', phase=2, use_otp=use_otp)
-
-    # Step 2 — verify OTP + set new password (or direct submit when no OTP)
-    if request.method == 'POST' and request.form.get('action') == 'change':
-        current_pw = request.form.get('current_password', '').strip()
+        pin_input  = request.form.get('backup_pin', '').strip()
         new_pw     = request.form.get('new_password', '').strip()
         confirm_pw = request.form.get('confirm_password', '').strip()
-        otp_input  = request.form.get('otp', '').strip()
 
         if not current_user.check_password(current_pw):
             flash('Current password is incorrect.', 'danger')
-            return render_template('admin/change_password.html', phase=1, use_otp=use_otp)
+            return render_template('admin/change_password.html', has_pin=has_pin)
 
-        if use_otp:
-            stored_hash = session.get('pw_otp')
-            exp_str     = session.get('pw_otp_exp')
-            if not stored_hash or not exp_str:
-                flash('No verification code found. Please request a new code.', 'danger')
-                return render_template('admin/change_password.html', phase=1, use_otp=use_otp)
-            if datetime.utcnow() > datetime.fromisoformat(exp_str):
-                session.pop('pw_otp', None); session.pop('pw_otp_exp', None)
-                flash('Verification code expired. Please request a new one.', 'danger')
-                return render_template('admin/change_password.html', phase=1, use_otp=use_otp)
-            if not check_password_hash(stored_hash, otp_input):
-                flash('Incorrect verification code.', 'danger')
-                return render_template('admin/change_password.html', phase=2, use_otp=use_otp)
+        if has_pin and not current_user.check_backup_pin(pin_input):
+            flash('Backup PIN is incorrect.', 'danger')
+            return render_template('admin/change_password.html', has_pin=has_pin)
 
         errors = _validate_password(new_pw)
         if errors:
             flash('New password does not meet requirements: ' + ' · '.join(errors), 'danger')
-            phase = 2 if use_otp else 1
-            return render_template('admin/change_password.html', phase=phase, use_otp=use_otp)
+            return render_template('admin/change_password.html', has_pin=has_pin)
 
         if new_pw != confirm_pw:
             flash('New passwords do not match.', 'danger')
-            phase = 2 if use_otp else 1
-            return render_template('admin/change_password.html', phase=phase, use_otp=use_otp)
+            return render_template('admin/change_password.html', has_pin=has_pin)
 
         if current_user.check_password(new_pw):
             flash('New password must be different from the current password.', 'danger')
-            phase = 2 if use_otp else 1
-            return render_template('admin/change_password.html', phase=phase, use_otp=use_otp)
+            return render_template('admin/change_password.html', has_pin=has_pin)
 
-        session.pop('pw_otp', None); session.pop('pw_otp_exp', None)
         current_user.set_password(new_pw)
         db.session.commit()
         flash('Password changed successfully.', 'success')
         return redirect(url_for('admin.dashboard'))
 
-    return render_template('admin/change_password.html', phase=1, use_otp=use_otp)
+    return render_template('admin/change_password.html', has_pin=has_pin)

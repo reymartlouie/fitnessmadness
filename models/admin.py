@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
 
+
 class Admin(UserMixin, db.Model):
     __tablename__ = 'admins'
 
@@ -12,7 +13,16 @@ class Admin(UserMixin, db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(120), nullable=True)
     phone = db.Column(db.String(20), nullable=True)
+    backup_pin_hash = db.Column(db.String(255), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def set_backup_pin(self, pin):
+        self.backup_pin_hash = generate_password_hash(pin)
+
+    def check_backup_pin(self, pin):
+        if not self.backup_pin_hash:
+            return False
+        return check_password_hash(self.backup_pin_hash, pin)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

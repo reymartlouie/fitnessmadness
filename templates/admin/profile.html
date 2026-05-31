@@ -1,25 +1,56 @@
 {% extends 'admin/base.html' %}
-
 {% block title %}Profile{% endblock %}
 
 {% block content %}
 <div class="page-title">Profile</div>
-<div class="page-subtitle">Set your recovery email and phone number</div>
+<div class="page-subtitle">Manage your contact info and backup PIN</div>
 
+<!-- Contact Info -->
+<div class="table-card mb-4" style="max-width:480px;">
+    <div class="table-card-header">
+        <i class="bi bi-person-gear me-2" style="color:var(--accent);"></i>Contact Info
+    </div>
+    <div class="p-4">
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-control" value="{{ current_user.username }}" disabled>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email <span class="text-muted small">(optional)</span></label>
+                <input type="email" name="email" class="form-control"
+                       placeholder="e.g. owner@gmail.com"
+                       value="{{ current_user.email or '' }}">
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Phone <span class="text-muted small">(optional)</span></label>
+                <input type="tel" name="phone" class="form-control"
+                       placeholder="e.g. 09171234567"
+                       value="{{ current_user.phone or '' }}">
+            </div>
+            <button type="submit" class="btn px-4"
+                    style="background:var(--accent);color:#fff;border:none;border-radius:8px;font-weight:600;">
+                <i class="bi bi-check-lg me-1"></i>Save
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Backup PIN -->
 <div class="table-card" style="max-width:480px;">
     <div class="table-card-header">
-        <i class="bi bi-person-gear me-2" style="color:var(--accent);"></i>Account Info
+        <i class="bi bi-shield-lock me-2" style="color:var(--accent);"></i>Backup PIN
     </div>
     <div class="p-4">
 
-        <!-- Status banner -->
-        {% if current_user.email %}
+        {% if current_user.backup_pin_hash %}
         <div class="d-flex align-items-center gap-2 mb-4 p-3"
              style="background:rgba(25,180,90,0.08);border:1px solid rgba(25,180,90,0.2);border-radius:10px;">
             <i class="bi bi-shield-check" style="color:#1a9e58;font-size:1.2rem;"></i>
             <div>
-                <div style="font-weight:600;color:#1a9e58;font-size:0.9rem;">Email verification is active</div>
-                <div class="text-muted" style="font-size:0.82rem;">Codes will be sent to {{ current_user.email }}</div>
+                <div style="font-weight:600;color:#1a9e58;font-size:0.9rem;">Backup PIN is set</div>
+                <div class="text-muted" style="font-size:0.82rem;">You will need this PIN to change your password.</div>
             </div>
         </div>
         {% else %}
@@ -27,61 +58,40 @@
              style="background:rgba(255,193,7,0.08);border:1px solid rgba(255,193,7,0.2);border-radius:10px;">
             <i class="bi bi-exclamation-triangle" style="color:#f0a500;font-size:1.2rem;"></i>
             <div>
-                <div style="font-weight:600;color:#f0a500;font-size:0.9rem;">No recovery email set</div>
-                <div class="text-muted" style="font-size:0.82rem;">Add an email to enable verification when changing your password.</div>
+                <div style="font-weight:600;color:#f0a500;font-size:0.9rem;">No backup PIN set</div>
+                <div class="text-muted" style="font-size:0.82rem;">Set a PIN below for extra security when changing your password.</div>
             </div>
         </div>
         {% endif %}
 
         <form method="POST">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <!-- Keep contact fields unchanged when submitting PIN form -->
+            <input type="hidden" name="email" value="{{ current_user.email or '' }}">
+            <input type="hidden" name="phone" value="{{ current_user.phone or '' }}">
+
+            {% if current_user.backup_pin_hash %}
+            <div class="mb-3">
+                <label class="form-label">Current PIN</label>
+                <input type="password" name="current_pin" class="form-control"
+                       placeholder="Enter your current PIN"
+                       inputmode="numeric" maxlength="8" required>
+            </div>
+            {% endif %}
 
             <div class="mb-3">
-                <label class="form-label">Username</label>
-                <input type="text" class="form-control" value="{{ current_user.username }}" disabled>
+                <label class="form-label">{{ 'New PIN' if current_user.backup_pin_hash else 'Set a PIN' }}</label>
+                <input type="password" name="backup_pin" class="form-control"
+                       placeholder="4–8 digits"
+                       inputmode="numeric" maxlength="8" pattern="\d{4,8}" required>
+                <div class="form-text">4 to 8 digits. Keep this separate from your password.</div>
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">Recovery Email</label>
-                <input type="email" name="email" class="form-control"
-                       placeholder="e.g. owner@gmail.com"
-                       value="{{ current_user.email or '' }}">
-                <div class="form-text">A verification code will be sent here when you change your password.</div>
-            </div>
-
-            <div class="mb-4">
-                <label class="form-label">Phone Number <span class="text-muted small">(optional, for future use)</span></label>
-                <input type="tel" name="phone" class="form-control"
-                       placeholder="e.g. 09171234567"
-                       value="{{ current_user.phone or '' }}">
-            </div>
-
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn px-4"
-                        style="background:var(--accent);color:#fff;border:none;border-radius:8px;font-weight:600;">
-                    <i class="bi bi-check-lg me-1"></i>Save
-                </button>
-                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary px-4">Cancel</a>
-            </div>
+            <button type="submit" class="btn px-4"
+                    style="background:var(--accent);color:#fff;border:none;border-radius:8px;font-weight:600;">
+                <i class="bi bi-shield-check me-1"></i>{{ 'Update PIN' if current_user.backup_pin_hash else 'Set PIN' }}
+            </button>
         </form>
-    </div>
-</div>
-
-<!-- Gmail setup instructions -->
-<div class="table-card mt-4" style="max-width:480px;">
-    <div class="table-card-header">
-        <i class="bi bi-info-circle me-2" style="color:var(--accent);"></i>Gmail Setup
-    </div>
-    <div class="p-4 text-muted" style="font-size:0.88rem;line-height:1.7;">
-        <p class="mb-2">To send verification codes via Gmail, add these to your <strong style="color:var(--text);">.env</strong> file:</p>
-        <pre style="background:var(--surface-alt);border:1px solid var(--border);border-radius:8px;padding:0.75rem;font-size:0.82rem;color:var(--text);">MAIL_USERNAME=yourgmail@gmail.com
-MAIL_PASSWORD=your_app_password</pre>
-        <p class="mb-1 mt-2">For the app password:</p>
-        <ol class="ps-3 mb-0">
-            <li>Enable 2-Step Verification on your Google account.</li>
-            <li>Go to <strong style="color:var(--text);">Google Account → Security → App Passwords</strong>.</li>
-            <li>Create a new app password and paste it as <code>MAIL_PASSWORD</code>.</li>
-        </ol>
     </div>
 </div>
 {% endblock %}
