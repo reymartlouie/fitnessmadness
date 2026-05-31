@@ -44,15 +44,17 @@
 
             <div class="row g-3 mb-3">
                 <div class="col-sm-6">
-                    <label class="form-label text-muted small">Phone Number</label>
+                    <label class="form-label text-muted small">Phone Number {% if action == 'add' %}<span style="color:var(--accent);">*</span>{% endif %}</label>
                     <input type="tel" name="phone" class="form-control"
                            placeholder="e.g. 09171234567"
+                           {% if action == 'add' %}required{% endif %}
                            value="{{ member.phone or '' if action == 'edit' else request.form.get('phone', '') }}">
                 </div>
                 <div class="col-sm-6">
-                    <label class="form-label text-muted small">Email Address</label>
+                    <label class="form-label text-muted small">Email Address {% if action == 'add' %}<span style="color:var(--accent);">*</span>{% endif %}</label>
                     <input type="email" name="email" class="form-control"
                            placeholder="e.g. juan@email.com"
+                           {% if action == 'add' %}required{% endif %}
                            value="{{ member.email or '' if action == 'edit' else request.form.get('email', '') }}">
                 </div>
             </div>

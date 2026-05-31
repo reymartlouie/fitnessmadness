@@ -306,6 +306,83 @@
         /* Alerts */
         .alert { border-radius: 10px; }
 
+        /* Dark mode — override Bootstrap's own CSS variables */
+        [data-theme="dark"] {
+            --bs-body-bg: #0f0f0f;
+            --bs-body-color: #f2f2f7;
+            --bs-border-color: #3a3a3c;
+        }
+
+        [data-theme="dark"] .table {
+            --bs-table-color: #f2f2f7;
+            --bs-table-bg: transparent;
+            --bs-table-border-color: #3a3a3c;
+            --bs-table-striped-bg: rgba(255,255,255,0.03);
+            --bs-table-hover-bg: rgba(229,56,59,0.06);
+            color: #f2f2f7;
+        }
+
+        [data-theme="dark"] .table > :not(caption) > * > * {
+            background-color: transparent;
+            border-color: #3a3a3c;
+        }
+
+        [data-theme="dark"] .table-responsive {
+            background-color: transparent;
+        }
+
+        [data-theme="dark"] .alert-success {
+            --bs-alert-bg: rgba(48, 209, 88, 0.12);
+            --bs-alert-border-color: rgba(48, 209, 88, 0.25);
+            --bs-alert-color: #6ddd8e;
+            background-color: rgba(48, 209, 88, 0.12);
+            border-color: rgba(48, 209, 88, 0.25);
+            color: #6ddd8e;
+        }
+
+        [data-theme="dark"] .alert-danger {
+            --bs-alert-bg: rgba(229, 56, 59, 0.12);
+            --bs-alert-border-color: rgba(229, 56, 59, 0.25);
+            --bs-alert-color: #ff6b6e;
+            background-color: rgba(229, 56, 59, 0.12);
+            border-color: rgba(229, 56, 59, 0.25);
+            color: #ff6b6e;
+        }
+
+        [data-theme="dark"] .alert-warning {
+            --bs-alert-bg: rgba(255, 193, 7, 0.12);
+            --bs-alert-border-color: rgba(255, 193, 7, 0.25);
+            --bs-alert-color: #ffd60a;
+            background-color: rgba(255, 193, 7, 0.12);
+            border-color: rgba(255, 193, 7, 0.25);
+            color: #ffd60a;
+        }
+
+        [data-theme="dark"] .alert-info {
+            --bs-alert-bg: rgba(10, 132, 255, 0.12);
+            --bs-alert-border-color: rgba(10, 132, 255, 0.25);
+            --bs-alert-color: #6abaff;
+            background-color: rgba(10, 132, 255, 0.12);
+            border-color: rgba(10, 132, 255, 0.25);
+            color: #6abaff;
+        }
+
+        [data-theme="dark"] .btn-outline-secondary {
+            --bs-btn-color: #8e8e93;
+            --bs-btn-border-color: #3a3a3c;
+            --bs-btn-hover-bg: #2c2c2e;
+            --bs-btn-hover-color: #f2f2f7;
+            --bs-btn-hover-border-color: #3a3a3c;
+        }
+
+        [data-theme="dark"] .btn-outline-danger {
+            --bs-btn-hover-bg: rgba(229, 56, 59, 0.12);
+        }
+
+        [data-theme="dark"] .btn-outline-success {
+            --bs-btn-hover-bg: rgba(48, 209, 88, 0.12);
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar { display: none; }

@@ -244,8 +244,8 @@ def add_member():
         email = request.form.get('email', '').strip()
         membership_type = request.form.get('membership_type', MembershipType.REGULAR)
 
-        if not membership_id or not full_name:
-            flash('Membership ID and full name are required.', 'danger')
+        if not membership_id or not full_name or not phone or not email:
+            flash('All fields are required. Please fill in Membership ID, Full Name, Phone, and Email.', 'danger')
             return render_template('admin/member_form.html',
                 action='add', membership_types=MembershipType.ALL, prices=MEMBERSHIP_PRICES)
 
