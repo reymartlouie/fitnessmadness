@@ -416,6 +416,10 @@
                class="nav-link {% if request.endpoint in ['admin.payments'] %}active{% endif %}">
                 <i class="bi bi-cash-coin"></i> Payments
             </a>
+            <a href="{{ url_for('admin.profile') }}"
+               class="nav-link {% if request.endpoint == 'admin.profile' %}active{% endif %}">
+                <i class="bi bi-person-gear"></i> Profile
+            </a>
         </nav>
 
         <div class="sidebar-footer">
