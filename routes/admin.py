@@ -1,13 +1,29 @@
 import csv
 import io
+import re
 from flask import Blueprint, render_template, request, Response, redirect, url_for, flash
-from flask_login import login_required
+from flask_login import login_required, current_user
 from models.member import Member, MembershipType, MEMBERSHIP_PRICES
 from models.attendance import Attendance
 from models.payment import Payment
 from extensions import db
 from datetime import date, datetime, time
 from dateutil.relativedelta import relativedelta
+
+
+def _validate_password(password):
+    errors = []
+    if len(password) < 8:
+        errors.append('At least 8 characters.')
+    if not re.search(r'[A-Z]', password):
+        errors.append('At least one uppercase letter (A–Z).')
+    if not re.search(r'[a-z]', password):
+        errors.append('At least one lowercase letter (a–z).')
+    if not re.search(r'\d', password):
+        errors.append('At least one number (0–9).')
+    if not re.search(r'[!@#$%^&*()\-_=+\[\]{};:\'",.<>?/\\|`~]', password):
+        errors.append('At least one special character (e.g. !@#$%).')
+    return errors
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -423,3 +439,36 @@ def delete_member(member_id):
     db.session.commit()
     flash(f'Member "{name}" and all their attendance records have been permanently deleted.', 'warning')
     return redirect(url_for('admin.members'))
+
+
+@admin_bp.route('/change-password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    if request.method == 'POST':
+        current_pw = request.form.get('current_password', '').strip()
+        new_pw = request.form.get('new_password', '').strip()
+        confirm_pw = request.form.get('confirm_password', '').strip()
+
+        if not current_user.check_password(current_pw):
+            flash('Current password is incorrect.', 'danger')
+            return render_template('admin/change_password.html')
+
+        errors = _validate_password(new_pw)
+        if errors:
+            flash('New password does not meet requirements: ' + ' · '.join(errors), 'danger')
+            return render_template('admin/change_password.html')
+
+        if new_pw != confirm_pw:
+            flash('New passwords do not match.', 'danger')
+            return render_template('admin/change_password.html')
+
+        if current_user.check_password(new_pw):
+            flash('New password must be different from the current password.', 'danger')
+            return render_template('admin/change_password.html')
+
+        current_user.set_password(new_pw)
+        db.session.commit()
+        flash('Password changed successfully.', 'success')
+        return redirect(url_for('admin.dashboard'))
+
+    return render_template('admin/change_password.html')
