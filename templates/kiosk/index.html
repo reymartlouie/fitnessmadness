@@ -376,6 +376,46 @@
 
     </div>
 
+    <!-- Expiry Warning Modal -->
+    {% if expiry_warning and warning_member %}
+    <div class="modal fade" id="expiryModal" tabindex="-1" aria-hidden="true"
+         data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background-color:#1a1a1a;border:1px solid #3a3a3a;border-radius:16px;">
+                <div class="modal-body text-center p-4">
+                    <div style="font-size:3rem;">⚠️</div>
+                    <h4 class="fw-bold mt-2 mb-1" style="color:#f0a500;">Membership Expiring Soon</h4>
+                    <p class="text-muted mb-3">
+                        Hey <strong class="text-white">{{ warning_member.full_name }}</strong>,
+                        your membership expires in:
+                    </p>
+                    <div style="background:rgba(240,165,0,0.1);border:1px solid rgba(240,165,0,0.3);border-radius:12px;padding:1.25rem;margin-bottom:1rem;">
+                        <div style="font-size:2.8rem;font-weight:800;color:#f0a500;line-height:1;">
+                            {{ days_left }} day{{ 's' if days_left != 1 else '' }}
+                        </div>
+                        <div class="text-muted small mt-1">
+                            Expires on <strong class="text-white">{{ warning_member.membership_end.strftime('%B %d, %Y') }}</strong>
+                        </div>
+                    </div>
+                    <p class="text-muted small mb-4">
+                        Please renew at the front desk before your membership expires to avoid interruption.
+                    </p>
+                    <form method="POST" action="{{ url_for('kiosk.checkin') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="membership_id" value="{{ warning_member.membership_id }}">
+                        <input type="hidden" name="full_name" value="{{ warning_member.full_name }}">
+                        <input type="hidden" name="confirmed" value="1">
+                        <button type="submit" class="btn-submit">
+                            <i class="bi bi-check-circle me-2"></i>Got it, Check Me In
+                        </button>
+                    </form>
+                    <a href="{{ url_for('kiosk.index') }}" class="d-block mt-3 text-muted small">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
     <script>
         function updateClock() {
@@ -401,6 +441,10 @@
                 bsAlert.close();
             });
         }, 5000);
+
+        {% if expiry_warning %}
+        new bootstrap.Modal(document.getElementById('expiryModal')).show();
+        {% endif %}
     </script>
 </body>
 </html>

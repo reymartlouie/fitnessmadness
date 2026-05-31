@@ -65,6 +65,18 @@ def checkin():
         flash(f'Your membership has expired. Please renew at the front desk.', 'warning')
         return redirect(url_for('kiosk.index'))
 
+    confirmed = request.form.get('confirmed', '').strip()
+    days_left = member.days_remaining()
+    if days_left <= 7 and not confirmed:
+        return render_template('kiosk/index.html',
+            member_records=None,
+            looked_up_member=None,
+            active_tab='checkin',
+            expiry_warning=True,
+            warning_member=member,
+            days_left=days_left
+        )
+
     active_session = Attendance.query.filter_by(
         member_id=member.id,
         attendance_date=date.today()
