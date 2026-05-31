@@ -29,7 +29,7 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(user_id):
-        return Admin.query.get(int(user_id))
+        return db.session.get(Admin, int(user_id))
 
     @app.context_processor
     def inject_gym_name():
