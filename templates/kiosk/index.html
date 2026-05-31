@@ -4,21 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ gym_name }} — Kiosk</title>
+    <script>(function(){var t=localStorage.getItem('fm-theme')||'light';document.documentElement.setAttribute('data-theme',t);})();</script>
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/bootstrap-icons.min.css') }}" rel="stylesheet">
     <style>
+        :root {
+            --bg:             #f5f5f7;
+            --surface:        #ffffff;
+            --border:         #e5e5e7;
+            --text:           #2e2e2e;
+            --text-muted:     #6e6e73;
+            --text-subtle:    #aeaeb2;
+            --accent:         #d62929;
+            --accent-hover:   #b52020;
+            --accent-subtle:  rgba(214, 41, 41, 0.08);
+            --input-bg:       #ffffff;
+            --input-border:   #d2d2d7;
+            --placeholder:    #aeaeb2;
+        }
+
+        [data-theme="dark"] {
+            --bg:             #0f0f0f;
+            --surface:        #1c1c1e;
+            --border:         #3a3a3c;
+            --text:           #f2f2f7;
+            --text-muted:     #8e8e93;
+            --text-subtle:    #636366;
+            --accent:         #e5383b;
+            --accent-hover:   #c82828;
+            --accent-subtle:  rgba(229, 56, 59, 0.12);
+            --input-bg:       #2c2c2e;
+            --input-border:   #3a3a3c;
+            --placeholder:    #636366;
+        }
+
         * { box-sizing: border-box; }
 
         body {
-            background-color: #0f0f0f;
-            color: #ffffff;
+            background-color: var(--bg);
+            color: var(--text);
             min-height: 100vh;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             overflow-x: hidden;
         }
 
         .brand {
-            color: #ff6b35;
+            color: var(--accent);
             font-weight: 800;
             font-size: 2rem;
             letter-spacing: 1px;
@@ -27,19 +58,42 @@
         .clock {
             font-size: 3rem;
             font-weight: 700;
-            color: #ffffff;
+            color: var(--text);
             letter-spacing: 2px;
         }
 
         .date-display {
-            color: #888;
+            color: var(--text-muted);
             font-size: 1rem;
         }
 
+        .theme-toggle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
         .tab-btn {
-            background-color: #1a1a1a;
-            border: 2px solid #2a2a2a;
-            color: #888;
+            background-color: var(--surface);
+            border: 2px solid var(--border);
+            color: var(--text-muted);
             padding: 1rem 2rem;
             border-radius: 12px;
             font-size: 1.1rem;
@@ -50,44 +104,46 @@
         }
 
         .tab-btn.active, .tab-btn:hover {
-            background-color: #ff6b35;
-            border-color: #ff6b35;
+            background-color: var(--accent);
+            border-color: var(--accent);
             color: #fff;
         }
 
         .form-card {
-            background-color: #1a1a1a;
-            border: 1px solid #2a2a2a;
+            background-color: var(--surface);
+            border: 1px solid var(--border);
             border-radius: 16px;
             padding: 2rem;
         }
 
+        .form-card h5 { color: var(--text); }
+
         .form-control {
-            background-color: #2a2a2a;
-            border: 1px solid #3a3a3a;
-            color: #ffffff;
+            background-color: var(--input-bg) !important;
+            border: 1px solid var(--input-border) !important;
+            color: var(--text) !important;
             padding: 1rem 1.2rem;
             border-radius: 12px;
             font-size: 1.1rem;
         }
 
         .form-control:focus {
-            background-color: #2a2a2a;
-            border-color: #ff6b35;
-            color: #ffffff;
-            box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.25);
+            background-color: var(--input-bg) !important;
+            border-color: var(--accent) !important;
+            color: var(--text) !important;
+            box-shadow: 0 0 0 0.2rem var(--accent-subtle) !important;
         }
 
-        .form-control::placeholder { color: #555; }
+        .form-control::placeholder { color: var(--placeholder) !important; }
 
         .form-label {
-            color: #aaa;
+            color: var(--text-muted);
             font-size: 0.95rem;
             margin-bottom: 0.4rem;
         }
 
         .btn-submit {
-            background-color: #ff6b35;
+            background-color: var(--accent);
             border: none;
             color: #fff;
             padding: 1rem;
@@ -99,30 +155,30 @@
         }
 
         .btn-submit:hover {
-            background-color: #e55a25;
+            background-color: var(--accent-hover);
             color: #fff;
         }
 
-        .alert {
-            border-radius: 12px;
-            font-size: 1rem;
+        .alert { border-radius: 12px; font-size: 1rem; }
+
+        [data-theme="dark"] .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
         }
 
         .admin-link {
-            color: #444;
+            color: var(--text-subtle);
             text-decoration: none;
             font-size: 0.85rem;
             transition: color 0.2s;
         }
 
-        .admin-link:hover { color: #ff6b35; }
+        .admin-link:hover { color: var(--accent); }
 
-        .divider { border-color: #2a2a2a; }
+        .divider { border-color: var(--border); }
 
         .panel { display: none; }
         .panel.active { display: block; }
 
-        /* Records table */
         .records-table {
             width: 100%;
             font-size: 0.9rem;
@@ -130,53 +186,81 @@
         }
 
         .records-table th {
-            color: #666;
+            color: var(--text-subtle);
             font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             padding: 0.6rem 0.75rem;
-            border-bottom: 1px solid #2a2a2a;
+            border-bottom: 1px solid var(--border);
             text-align: left;
         }
 
         .records-table td {
             padding: 0.75rem;
-            border-bottom: 1px solid #1e1e1e;
-            color: #ccc;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-muted);
         }
 
         .records-table tr:last-child td { border-bottom: none; }
 
         .member-info-card {
-            background-color: #1a1a1a;
-            border: 1px solid #2a2a2a;
+            background-color: var(--surface);
+            border: 1px solid var(--border);
             border-radius: 16px;
             padding: 1.25rem 1.5rem;
             margin-bottom: 1rem;
         }
 
+        .member-info-card .fw-bold { color: var(--text); }
+
+        .text-muted { color: var(--text-muted) !important; }
+
         .badge-active {
-            background-color: rgba(25, 200, 100, 0.15);
-            color: #19c864;
+            background-color: rgba(25, 180, 90, 0.1);
+            color: #1a9e58;
             padding: 0.25rem 0.6rem;
             border-radius: 20px;
             font-size: 0.78rem;
         }
 
+        [data-theme="dark"] .badge-active {
+            background-color: rgba(48, 209, 88, 0.12);
+            color: #30d158;
+        }
+
         .badge-expired {
-            background-color: rgba(200, 50, 50, 0.15);
-            color: #e05252;
+            background-color: rgba(214, 41, 41, 0.1);
+            color: var(--accent);
             padding: 0.25rem 0.6rem;
             border-radius: 20px;
             font-size: 0.78rem;
         }
 
         .badge-done {
-            background-color: rgba(100,100,100,0.15);
-            color: #888;
+            background-color: rgba(110, 110, 115, 0.1);
+            color: var(--text-muted);
             padding: 0.25rem 0.6rem;
             border-radius: 20px;
             font-size: 0.78rem;
+        }
+
+        /* Modal */
+        .modal-content {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+
+        .expiry-count-box {
+            background: var(--accent-subtle);
+            border: 1px solid rgba(214, 41, 41, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        [data-theme="dark"] .expiry-count-box {
+            border-color: rgba(229, 56, 59, 0.3);
         }
     </style>
 </head>
@@ -184,7 +268,10 @@
     <div class="container py-4" style="max-width: 600px;">
 
         <!-- Header -->
-        <div class="text-center mb-4">
+        <div class="text-center mb-4" style="position:relative;">
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <i id="theme-icon"></i>
+            </button>
             <div class="brand">{{ gym_name }}</div>
             <div class="clock mt-2" id="clock">--:--:--</div>
             <div class="date-display" id="date-display">Loading...</div>
@@ -197,7 +284,7 @@
                     <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
                         <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }} me-2"></i>
                         {{ message }}
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 {% endfor %}
             {% endif %}
@@ -229,7 +316,7 @@
         <div id="panel-checkin" class="panel {% if not active_tab or active_tab == 'checkin' %}active{% endif %}">
             <div class="form-card">
                 <h5 class="mb-4 fw-bold">
-                    <i class="bi bi-person-check me-2 text-warning"></i>Member Check-In
+                    <i class="bi bi-person-check me-2" style="color:var(--accent);"></i>Member Check-In
                 </h5>
                 <form method="POST" action="{{ url_for('kiosk.checkin') }}">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -274,7 +361,7 @@
         <div id="panel-records" class="panel {% if active_tab == 'records' %}active{% endif %}">
             <div class="form-card mb-3">
                 <h5 class="mb-4 fw-bold">
-                    <i class="bi bi-person-lines-fill me-2 text-warning"></i>My Attendance Records
+                    <i class="bi bi-person-lines-fill me-2" style="color:var(--accent);"></i>My Attendance Records
                 </h5>
                 <form method="POST" action="{{ url_for('kiosk.my_records') }}">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -296,7 +383,6 @@
             </div>
 
             {% if looked_up_member %}
-            <!-- Member Info -->
             <div class="member-info-card">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
@@ -316,7 +402,6 @@
                 </div>
             </div>
 
-            <!-- Attendance Records -->
             {% if member_records %}
             <div class="form-card">
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -381,20 +466,20 @@
     <div class="modal fade" id="expiryModal" tabindex="-1" aria-hidden="true"
          data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" style="background-color:#1a1a1a;border:1px solid #3a3a3a;border-radius:16px;">
+            <div class="modal-content">
                 <div class="modal-body text-center p-4">
                     <div style="font-size:3rem;">⚠️</div>
-                    <h4 class="fw-bold mt-2 mb-1" style="color:#f0a500;">Membership Expiring Soon</h4>
+                    <h4 class="fw-bold mt-2 mb-1" style="color:var(--accent);">Membership Expiring Soon</h4>
                     <p class="text-muted mb-3">
-                        Hey <strong class="text-white">{{ warning_member.full_name }}</strong>,
+                        Hey <strong style="color:var(--text);">{{ warning_member.full_name }}</strong>,
                         your membership expires in:
                     </p>
-                    <div style="background:rgba(240,165,0,0.1);border:1px solid rgba(240,165,0,0.3);border-radius:12px;padding:1.25rem;margin-bottom:1rem;">
-                        <div style="font-size:2.8rem;font-weight:800;color:#f0a500;line-height:1;">
+                    <div class="expiry-count-box">
+                        <div style="font-size:2.8rem;font-weight:800;color:var(--accent);line-height:1;">
                             {{ days_left }} day{{ 's' if days_left != 1 else '' }}
                         </div>
                         <div class="text-muted small mt-1">
-                            Expires on <strong class="text-white">{{ warning_member.membership_end.strftime('%B %d, %Y') }}</strong>
+                            Expires on <strong style="color:var(--text);">{{ warning_member.membership_end.strftime('%B %d, %Y') }}</strong>
                         </div>
                     </div>
                     <p class="text-muted small mb-4">
@@ -441,6 +526,21 @@
                 bsAlert.close();
             });
         }, 5000);
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme') || 'light';
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('fm-theme', next);
+            updateThemeIcon(next);
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('theme-icon');
+            if (icon) icon.className = theme === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+        }
+
+        updateThemeIcon(document.documentElement.getAttribute('data-theme') || 'light');
 
         {% if expiry_warning %}
         new bootstrap.Modal(document.getElementById('expiryModal')).show();
