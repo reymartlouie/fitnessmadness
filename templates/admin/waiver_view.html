@@ -1,0 +1,130 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Waiver — {{ member.full_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 no-print">
+    <div class="d-flex align-items-center gap-3">
+        <a href="{{ url_for('admin.members') }}" class="text-muted text-decoration-none">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <div>
+            <div class="page-title mb-0">Signed Waiver</div>
+            <div class="page-subtitle">{{ member.full_name }} &mdash; {{ member.membership_id }}</div>
+        </div>
+    </div>
+    {% if member.waiver_signed_at %}
+    <button onclick="window.print()" class="btn btn-outline-secondary btn-sm px-4">
+        <i class="bi bi-printer me-1"></i>Print
+    </button>
+    {% endif %}
+</div>
+
+{% if member.waiver_signed_at %}
+<div class="waiver-document mx-auto" style="max-width: 720px;">
+    <div class="table-card">
+        <div class="p-5" id="waiverPrintArea">
+
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <div class="fw-bold" style="font-size: 1.1rem; letter-spacing: 0.05em;">FITNESS MADNESS</div>
+                <div class="text-muted small">3rd Floor, Tresmavica Bldg., Q. Abeto St., Mandurriao, Iloilo City</div>
+                <hr class="my-3">
+                <div class="fw-bold" style="font-size: 1.15rem; letter-spacing: 0.08em;">WAIVER AND RELEASE OF LIABILITY</div>
+            </div>
+
+            <!-- Waiver Body -->
+            <div style="font-size: 0.9rem; line-height: 1.85; text-align: justify;">
+                <p>I declare myself to be physically and mentally sound and suffering from no condition, impairment of any kind, disease, infirmity, or other illness that would prevent my participation in any form of exercise or fitness activity. I acknowledge that I have either had a physical examination and have been given a physician's permission to participate in these activities, or I have decided to participate in these activities without the approval of my physician.</p>
+
+                <p>I understand and acknowledge that using the gym facilities, exercise equipment and participating in fitness activities involves risk of illness, serious injury, including permanent disability and death.</p>
+
+                <p>I, for myself and on behalf of my heirs, assigns, personal representatives and next of kin, hereby release, indemnify, and hold harmless, <em>Quad Core Twenty Seventeen, Inc.</em> doing business in the name of <em>More Than Just Fitness Madness</em>, its officers, officials, agents, students, and/or employees from any and all claims, demands, damages, rights of action or cases of actions, present or future, arising out of my use or occupancy of the gym facility or any fitness activity occurring therein.</p>
+
+                <p>This waiver and release of liability includes, without limitation, all injuries which may occur as a result of: 1) my use of all amenities and equipment in the facility and my participation in any activity, class, program, personal training or instruction; 2) the sudden and unforeseen malfunctioning of any equipment; 3) any instruction, training, supervision, or dietary recommendations; and 4) my slipping and/or falling while in the building, or on the premises, including adjacent sidewalks and parking areas.</p>
+
+                <p>By my signature, I/We indicate that I/We have read and understand this Waiver of Liability. I/We are aware that this is a waiver and a release of liability and I/We voluntarily agree to its terms.</p>
+            </div>
+
+            <!-- Signature Block -->
+            <div class="mt-5" style="font-size: 0.9rem;">
+                <div class="row mb-4">
+                    <div class="col-12 mb-3">
+                        <span class="text-muted">Name (Please Print):</span>
+                        <span class="ms-2 fw-semibold border-bottom d-inline-block" style="min-width: 320px;">
+                            {{ member.waiver_name or '—' }}
+                        </span>
+                    </div>
+                    <div class="col-sm-7 mb-3">
+                        <span class="text-muted">Electronic Signature:</span>
+                        <span class="ms-2 fst-italic border-bottom d-inline-block" style="min-width: 200px; font-size:1rem;">
+                            {{ member.waiver_name or '—' }}
+                        </span>
+                    </div>
+                    <div class="col-sm-5 mb-3">
+                        <span class="text-muted">Date:</span>
+                        <span class="ms-2 border-bottom d-inline-block" style="min-width: 160px;">
+                            {{ member.waiver_signed_at.strftime('%B %d, %Y') }}
+                        </span>
+                    </div>
+                    <div class="col-12">
+                        <span class="text-muted">FB Username:</span>
+                        <span class="ms-2 border-bottom d-inline-block" style="min-width: 220px;">
+                            {{ member.waiver_fb_username or '—' }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Digital Record Notice -->
+            <div class="mt-4 p-3 no-print" style="
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                font-size: 0.78rem;
+                color: var(--text-muted);
+            ">
+                <i class="bi bi-shield-check me-1 text-success"></i>
+                <strong>Digital Record</strong> — This waiver was electronically acknowledged by
+                <strong>{{ member.waiver_name }}</strong> on
+                <strong>{{ member.waiver_signed_at.strftime('%B %d, %Y at %I:%M %p') }}</strong>
+                during registration for membership ID <strong>{{ member.membership_id }}</strong>.
+            </div>
+
+            <!-- Print-only footer -->
+            <div class="print-only mt-4 pt-3" style="border-top: 1px solid #ccc; font-size: 0.75rem; color: #666;">
+                Digital record — Electronically acknowledged on {{ member.waiver_signed_at.strftime('%B %d, %Y at %I:%M %p') }} &bull; Membership ID: {{ member.membership_id }}
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% else %}
+<div class="table-card mx-auto" style="max-width: 600px;">
+    <div class="p-5 text-center">
+        <i class="bi bi-file-earmark-x text-muted" style="font-size: 2.5rem;"></i>
+        <div class="fw-semibold mt-3 mb-1">No Digital Waiver on File</div>
+        <div class="text-muted small">
+            {{ member.full_name }} was registered before the digital waiver feature was added.
+            A physical waiver may be on file separately.
+        </div>
+        <a href="{{ url_for('admin.members') }}" class="btn btn-outline-secondary btn-sm mt-4 px-4">
+            Back to Members
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<style>
+    @media print {
+        .no-print { display: none !important; }
+        .print-only { display: block !important; }
+        .table-card { box-shadow: none !important; border: none !important; }
+        body { background: white !important; }
+    }
+    .print-only { display: none; }
+</style>
+{% endblock %}

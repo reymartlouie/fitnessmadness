@@ -132,12 +132,17 @@
                     <td>
                         <div class="d-flex gap-2">
                             <a href="{{ url_for('admin.edit_member', member_id=member.id) }}"
-                               class="btn btn-outline-secondary btn-sm">
+                               class="btn btn-outline-secondary btn-sm" title="Edit member">
                                 <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="{{ url_for('admin.view_waiver', member_id=member.id) }}"
+                               class="btn btn-sm {% if member.waiver_signed_at %}btn-outline-success{% else %}btn-outline-secondary{% endif %}"
+                               title="{% if member.waiver_signed_at %}View signed waiver{% else %}No digital waiver on file{% endif %}">
+                                <i class="bi bi-file-earmark-text"></i>
                             </a>
                             <form method="POST" action="{{ url_for('admin.renew_member', member_id=member.id) }}">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <button type="submit" class="btn btn-outline-success btn-sm"
+                                <button type="submit" class="btn btn-outline-warning btn-sm"
                                         title="Renew membership">
                                     <i class="bi bi-arrow-repeat"></i>
                                 </button>

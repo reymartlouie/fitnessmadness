@@ -437,6 +437,13 @@ def export_payments_csv():
     )
 
 
+@admin_bp.route('/members/<int:member_id>/waiver')
+@login_required
+def view_waiver(member_id):
+    member = Member.query.get_or_404(member_id)
+    return render_template('admin/waiver_view.html', member=member)
+
+
 @admin_bp.route('/members/<int:member_id>/delete-confirm', methods=['GET'])
 @login_required
 def delete_member_confirm(member_id):
