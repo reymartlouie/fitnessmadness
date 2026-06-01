@@ -260,22 +260,33 @@ def add_member():
         email = request.form.get('email', '').strip()
         membership_type = request.form.get('membership_type', MembershipType.REGULAR)
 
+        waiver_name = request.form.get('waiver_name', '').strip()
+        waiver_fb_username = request.form.get('waiver_fb_username', '').strip()
         waiver_agreed = request.form.get('waiver_agreed')
 
         if not membership_id or not full_name or not phone or not email:
             flash('All fields are required. Please fill in Membership ID, Full Name, Phone, and Email.', 'danger')
             return render_template('admin/member_form.html',
-                action='add', membership_types=MembershipType.ALL, prices=MEMBERSHIP_PRICES)
+                action='add', membership_types=MembershipType.ALL, prices=MEMBERSHIP_PRICES,
+                now=datetime.now())
+
+        if not waiver_name:
+            flash('Member must print their name on the waiver before registering.', 'danger')
+            return render_template('admin/member_form.html',
+                action='add', membership_types=MembershipType.ALL, prices=MEMBERSHIP_PRICES,
+                now=datetime.now())
 
         if not waiver_agreed:
-            flash('You must confirm the member has read and agreed to the waiver before registering.', 'danger')
+            flash('Member must agree to the waiver before registering.', 'danger')
             return render_template('admin/member_form.html',
-                action='add', membership_types=MembershipType.ALL, prices=MEMBERSHIP_PRICES)
+                action='add', membership_types=MembershipType.ALL, prices=MEMBERSHIP_PRICES,
+                now=datetime.now())
 
         if Member.query.filter_by(membership_id=membership_id).first():
             flash(f'Membership ID "{membership_id}" is already taken.', 'danger')
             return render_template('admin/member_form.html',
-                action='add', membership_types=MembershipType.ALL, prices=MEMBERSHIP_PRICES)
+                action='add', membership_types=MembershipType.ALL, prices=MEMBERSHIP_PRICES,
+                now=datetime.now())
 
         member = Member(
             membership_id=membership_id,
@@ -286,7 +297,9 @@ def add_member():
             membership_start=date.today(),
             membership_end=date.today() + relativedelta(months=1),
             is_active=True,
-            waiver_signed_at=datetime.now()
+            waiver_signed_at=datetime.now(),
+            waiver_name=waiver_name,
+            waiver_fb_username=waiver_fb_username or None,
         )
         db.session.add(member)
         db.session.commit()
@@ -294,7 +307,8 @@ def add_member():
         return redirect(url_for('admin.members'))
 
     return render_template('admin/member_form.html',
-        action='add', membership_types=MembershipType.ALL, prices=MEMBERSHIP_PRICES)
+        action='add', membership_types=MembershipType.ALL, prices=MEMBERSHIP_PRICES,
+        now=datetime.now())
 
 
 @admin_bp.route('/members/<int:member_id>/edit', methods=['GET', 'POST'])

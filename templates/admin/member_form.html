@@ -74,50 +74,52 @@
             </div>
 
             {% if action == 'add' %}
-            <div class="mb-4">
-                <label class="form-label text-muted small">
-                    <i class="bi bi-file-earmark-text me-1"></i>Liability Waiver
-                </label>
-                <div class="waiver-box p-3 mb-3" style="
-                    height: 200px;
-                    overflow-y: scroll;
-                    border: 1px solid var(--border);
-                    border-radius: 8px;
-                    background: var(--surface);
-                    font-size: 0.82rem;
-                    line-height: 1.6;
-                    color: var(--text-muted);
-                    white-space: pre-wrap;
-                ">
-⚠️ PLACEHOLDER — Replace this text with the official waiver provided by the gym owner before deployment.
+            <hr class="my-4">
+            <div class="mb-1 fw-semibold" style="font-size:0.95rem;">
+                <i class="bi bi-file-earmark-text me-2 text-warning"></i>Waiver and Release of Liability
+            </div>
+            <div class="text-muted small mb-3">Ask the member to read the waiver below, then complete the acknowledgement fields.</div>
 
-LIABILITY WAIVER AND RELEASE OF CLAIMS
+            <div class="p-3 mb-4" style="
+                height: 220px;
+                overflow-y: scroll;
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                background: var(--surface);
+                font-size: 0.82rem;
+                line-height: 1.75;
+                color: var(--text-muted);
+            ">
+                <div class="text-center fw-bold mb-3" style="font-size:0.9rem; color: var(--text);">WAIVER AND RELEASE OF LIABILITY</div>
+                <p>I declare myself to be physically and mentally sound and suffering from no condition, impairment of any kind, disease, infirmity, or other illness that would prevent my participation in any form of exercise or fitness activity. I acknowledge that I have either had a physical examination and have been given a physician's permission to participate in these activities, or I have decided to participate in these activities without the approval of my physician.</p>
+                <p>I understand and acknowledge that using the gym facilities, exercise equipment and participating in fitness activities involves risk of illness, serious injury, including permanent disability and death.</p>
+                <p>I, for myself and on behalf of my heirs, assigns, personal representatives and next of kin, hereby release, indemnify, and hold harmless, <em>Quad Core Twenty Seventeen, Inc.</em> doing business in the name of <em>More Than Just Fitness Madness</em>, its officers, officials, agents, students, and/or employees from any and all claims, demands, damages, rights of action or cases of actions, present or future, arising out of my use or occupancy of the gym facility or any fitness activity occurring therein.</p>
+                <p>This waiver and release of liability includes, without limitation, all injuries which may occur as a result of: 1) my use of all amenities and equipment in the facility and my participation in any activity, class, program, personal training or instruction; 2) the sudden and unforeseen malfunctioning of any equipment; 3) any instruction, training, supervision, or dietary recommendations; and 4) my slipping and/or falling while in the building, or on the premises, including adjacent sidewalks and parking areas.</p>
+                <p class="mb-0">By my signature, I/We indicate that I/We have read and understand this Waiver of Liability. I/We are aware that this is a waiver and a release of liability and I/We voluntarily agree to its terms.</p>
+            </div>
 
-I, the undersigned member, acknowledge and voluntarily agree to the following terms as a condition of membership at this gym:
-
-1. Assumption of Risk
-Physical exercise involves inherent risks, including but not limited to personal injury, muscle strain, sprains, fractures, cardiac events, and other health complications. I voluntarily and knowingly assume all such risks.
-
-2. Release of Liability
-I hereby release the gym, its owners, staff, employees, and agents from any and all claims, damages, losses, or liabilities arising from my use of the gym facilities, participation in fitness activities, or any accident or injury that occurs on the premises — whether caused by negligence or otherwise.
-
-3. Medical Fitness
-I confirm that I am in good physical health and have no medical condition that would prevent my safe participation in exercise. I agree to consult a licensed physician before starting any exercise program if I have any doubt about my fitness to do so.
-
-4. Personal Property
-The gym is not responsible for any lost, stolen, or damaged personal property while on the premises.
-
-5. Conduct
-I agree to follow all gym rules, use equipment properly and safely, and treat staff and fellow members with respect at all times. Failure to do so may result in membership termination.
-
-6. Agreement
-By proceeding with registration, I confirm that I have read, understood, and voluntarily agree to all terms stated in this waiver. I acknowledge that this is a legally binding document.
+            <div class="row g-3 mb-3">
+                <div class="col-sm-7">
+                    <label class="form-label text-muted small">Name (Please Print) <span style="color:var(--accent);">*</span></label>
+                    <input type="text" name="waiver_name" class="form-control"
+                           placeholder="Member's full name"
+                           value="{{ request.form.get('waiver_name', '') }}" required>
                 </div>
+                <div class="col-sm-5">
+                    <label class="form-label text-muted small">FB Username <span class="text-muted">(optional)</span></label>
+                    <input type="text" name="waiver_fb_username" class="form-control"
+                           placeholder="e.g. juan.delacruz"
+                           value="{{ request.form.get('waiver_fb_username', '') }}">
+                </div>
+            </div>
+
+            <div class="p-3 mb-4" style="border: 1px solid var(--border); border-radius: 8px; background: var(--surface);">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" name="waiver_agreed"
                            id="waiverCheck" value="1" required>
                     <label class="form-check-label small" for="waiverCheck">
-                        I confirm the member has read and agreed to the liability waiver above.
+                        I, <strong id="waiverNameDisplay">the member</strong>, have read, understood, and voluntarily agree to the Waiver and Release of Liability above.
+                        This serves as my electronic acknowledgement dated <strong>{{ now.strftime('%B %d, %Y') }}</strong>.
                     </label>
                 </div>
             </div>
@@ -134,4 +136,21 @@ By proceeding with registration, I confirm that I have read, understood, and vol
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+{% if action == 'add' %}
+<script>
+    const waiverNameInput = document.querySelector('input[name="waiver_name"]');
+    const waiverNameDisplay = document.getElementById('waiverNameDisplay');
+    if (waiverNameInput && waiverNameDisplay) {
+        waiverNameInput.addEventListener('input', function () {
+            waiverNameDisplay.textContent = this.value.trim() || 'the member';
+        });
+        if (waiverNameInput.value.trim()) {
+            waiverNameDisplay.textContent = waiverNameInput.value.trim();
+        }
+    }
+</script>
+{% endif %}
 {% endblock %}
