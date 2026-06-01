@@ -73,6 +73,56 @@
                 </select>
             </div>
 
+            {% if action == 'add' %}
+            <div class="mb-4">
+                <label class="form-label text-muted small">
+                    <i class="bi bi-file-earmark-text me-1"></i>Liability Waiver
+                </label>
+                <div class="waiver-box p-3 mb-3" style="
+                    height: 200px;
+                    overflow-y: scroll;
+                    border: 1px solid var(--border);
+                    border-radius: 8px;
+                    background: var(--surface);
+                    font-size: 0.82rem;
+                    line-height: 1.6;
+                    color: var(--text-muted);
+                    white-space: pre-wrap;
+                ">
+⚠️ PLACEHOLDER — Replace this text with the official waiver provided by the gym owner before deployment.
+
+LIABILITY WAIVER AND RELEASE OF CLAIMS
+
+I, the undersigned member, acknowledge and voluntarily agree to the following terms as a condition of membership at this gym:
+
+1. Assumption of Risk
+Physical exercise involves inherent risks, including but not limited to personal injury, muscle strain, sprains, fractures, cardiac events, and other health complications. I voluntarily and knowingly assume all such risks.
+
+2. Release of Liability
+I hereby release the gym, its owners, staff, employees, and agents from any and all claims, damages, losses, or liabilities arising from my use of the gym facilities, participation in fitness activities, or any accident or injury that occurs on the premises — whether caused by negligence or otherwise.
+
+3. Medical Fitness
+I confirm that I am in good physical health and have no medical condition that would prevent my safe participation in exercise. I agree to consult a licensed physician before starting any exercise program if I have any doubt about my fitness to do so.
+
+4. Personal Property
+The gym is not responsible for any lost, stolen, or damaged personal property while on the premises.
+
+5. Conduct
+I agree to follow all gym rules, use equipment properly and safely, and treat staff and fellow members with respect at all times. Failure to do so may result in membership termination.
+
+6. Agreement
+By proceeding with registration, I confirm that I have read, understood, and voluntarily agree to all terms stated in this waiver. I acknowledge that this is a legally binding document.
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="waiver_agreed"
+                           id="waiverCheck" value="1" required>
+                    <label class="form-check-label small" for="waiverCheck">
+                        I confirm the member has read and agreed to the liability waiver above.
+                    </label>
+                </div>
+            </div>
+            {% endif %}
+
             <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-warning px-4">
                     <i class="bi bi-check-lg me-1"></i>{{ 'Save Changes' if action == 'edit' else 'Add Member' }}

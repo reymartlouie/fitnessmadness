@@ -31,6 +31,7 @@ class Member(db.Model):
     membership_end = db.Column(db.Date, nullable=False)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    waiver_signed_at = db.Column(db.DateTime, nullable=True)
 
     attendance_records = db.relationship('Attendance', backref='member', lazy=True)
 

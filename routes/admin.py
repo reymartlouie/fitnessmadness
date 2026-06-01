@@ -260,8 +260,15 @@ def add_member():
         email = request.form.get('email', '').strip()
         membership_type = request.form.get('membership_type', MembershipType.REGULAR)
 
+        waiver_agreed = request.form.get('waiver_agreed')
+
         if not membership_id or not full_name or not phone or not email:
             flash('All fields are required. Please fill in Membership ID, Full Name, Phone, and Email.', 'danger')
+            return render_template('admin/member_form.html',
+                action='add', membership_types=MembershipType.ALL, prices=MEMBERSHIP_PRICES)
+
+        if not waiver_agreed:
+            flash('You must confirm the member has read and agreed to the waiver before registering.', 'danger')
             return render_template('admin/member_form.html',
                 action='add', membership_types=MembershipType.ALL, prices=MEMBERSHIP_PRICES)
 
@@ -278,7 +285,8 @@ def add_member():
             membership_type=membership_type,
             membership_start=date.today(),
             membership_end=date.today() + relativedelta(months=1),
-            is_active=True
+            is_active=True,
+            waiver_signed_at=datetime.now()
         )
         db.session.add(member)
         db.session.commit()
