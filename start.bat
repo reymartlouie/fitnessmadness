@@ -18,6 +18,9 @@ python database\backup.py
 :: Copy latest backup to USB flash drive if one is plugged in
 python database\flashdrive_backup.py
 
+:: Copy latest backup to Google Drive if installed
+python database\gdrive_backup.py
+
 :: Apply any schema updates (safe to run repeatedly)
 python database\migrate.py
 
