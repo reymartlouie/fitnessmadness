@@ -79,11 +79,21 @@ To change prices: edit `models/member.py` → `MEMBERSHIP_PRICES`
 
 ## Backup
 
-The entire database is one file:
+The system runs three layers of backup automatically on every kiosk start:
+
+**1. Local backup (always on)**
+Saves a timestamped copy to `database/backups/` and keeps the last 7.
+
+**2. USB flash drive backup (automatic)**
+If a flash drive is plugged in, the latest backup is copied to a `FitnessMadness_Backup/` folder on the drive. No setup needed.
+
+**3. Google Drive backup (optional)**
+Install [Google Drive for Desktop](https://drive.google.com/drive/download) and sign in with your Google account. The system auto-detects the sync folder and copies the latest backup there on startup.
+
+If the auto-detection fails, add this line to `.env`:
 ```
-database/fitnessmadness.db
+GOOGLE_DRIVE_PATH=C:\Users\YourName\Google Drive
 ```
-Copy this file to a USB drive regularly to back up all member and attendance data.
 
 ---
 

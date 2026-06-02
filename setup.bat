@@ -128,6 +128,20 @@ echo Creating desktop shortcut...
 powershell -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut([Environment]::GetFolderPath('Desktop') + '\FitnessMadness Kiosk.lnk'); $s.TargetPath = '%~dp0start.bat'; $s.WorkingDirectory = '%~dp0'; $s.IconLocation = 'shell32.dll,137'; $s.Description = 'Launch FitnessMadness Kiosk'; $s.Save()"
 echo [OK] Desktop shortcut created. Double-click it anytime to relaunch the kiosk.
 
+:: ── Step 11: Google Drive backup notice ───────────────────────────────
+echo.
+echo ============================================
+echo   OPTIONAL: Google Drive Backup
+echo ============================================
+echo   To enable automatic cloud backup:
+echo   1. Install Google Drive for Desktop:
+echo      https://drive.google.com/drive/download
+echo   2. Sign in with your Google account.
+echo   3. The system will automatically copy each
+echo      backup into your Google Drive folder.
+echo   No API keys or setup needed.
+echo ============================================
+
 :: ── Done ──────────────────────────────────────────────────────────────
 echo.
 echo ============================================
