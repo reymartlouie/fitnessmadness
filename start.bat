@@ -15,6 +15,9 @@ if not exist database\fitnessmadness.db (
 :: Back up the database on every startup (keeps last 7 copies in database\backups\)
 python database\backup.py
 
+:: Copy latest backup to USB flash drive if one is plugged in
+python database\flashdrive_backup.py
+
 :: Apply any schema updates (safe to run repeatedly)
 python database\migrate.py
 
