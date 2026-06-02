@@ -413,7 +413,23 @@ def payments():
 @admin_bp.route('/payments/export')
 @login_required
 def export_payments_csv():
-    logs = Payment.query.join(Member).order_by(Payment.recorded_at.desc()).all()
+    search = request.args.get('search', '').strip()
+    filter_date = request.args.get('date', '').strip()
+
+    query = Payment.query.join(Member)
+    if search:
+        query = query.filter(
+            Member.full_name.ilike(f'%{search}%') |
+            Member.membership_id.ilike(f'%{search}%')
+        )
+    if filter_date:
+        try:
+            parsed = datetime.strptime(filter_date, '%Y-%m-%d').date()
+            query = query.filter(Payment.payment_date == parsed)
+        except ValueError:
+            pass
+
+    logs = query.order_by(Payment.recorded_at.desc()).all()
 
     output = io.StringIO()
     writer = csv.writer(output)
