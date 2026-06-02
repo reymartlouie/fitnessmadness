@@ -3,19 +3,15 @@
 {% block title %}{{ 'Edit' if action == 'edit' else 'Add' }} Member{% endblock %}
 
 {% block content %}
-<div class="d-flex flex-column align-items-center">
-
-<div style="width: 100%; max-width: 600px;">
-    <div class="d-flex align-items-center gap-3 mb-1">
-        <a href="{{ url_for('admin.members') }}" class="text-muted text-decoration-none">
-            <i class="bi bi-arrow-left"></i>
-        </a>
-        <div class="page-title mb-0">{{ 'Edit Member' if action == 'edit' else 'Add New Member' }}</div>
-    </div>
-    <div class="page-subtitle">{{ 'Update member details' if action == 'edit' else 'Register a new gym member' }}</div>
+<div class="d-flex align-items-center gap-3 mb-1">
+    <a href="{{ url_for('admin.members') }}" class="text-muted text-decoration-none">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <div class="page-title mb-0">{{ 'Edit Member' if action == 'edit' else 'Add New Member' }}</div>
 </div>
+<div class="page-subtitle">{{ 'Update member details' if action == 'edit' else 'Register a new gym member' }}</div>
 
-<div class="table-card" style="width: 100%; max-width: 600px;">
+<div class="table-card" style="max-width: 600px;">
     <div class="table-card-header">
         <i class="bi bi-person-plus me-2 text-warning"></i>Member Details
     </div>
@@ -139,8 +135,6 @@
             </div>
         </form>
     </div>
-</div>
-
 </div>
 {% endblock %}
 
