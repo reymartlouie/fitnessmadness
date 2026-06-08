@@ -11,6 +11,21 @@ from extensions import db
 from dateutil.relativedelta import relativedelta
 
 
+def _next_membership_id():
+    candidates = Member.query.filter(
+        Member.membership_id.like('FM-%')
+    ).all()
+    highest = 0
+    for m in candidates:
+        parts = m.membership_id.split('-')
+        if len(parts) == 2 and parts[1].isdigit():
+            highest = max(highest, int(parts[1]))
+    num = highest + 1
+    while Member.query.filter_by(membership_id=f'FM-{num:04d}').first():
+        num += 1
+    return f'FM-{num:04d}'
+
+
 def _validate_password(password):
     errors = []
     if len(password) < 8:
@@ -326,7 +341,8 @@ def add_member():
 
     return render_template('admin/member_form.html',
         action='add', membership_types=MembershipType.ALL, prices=MEMBERSHIP_PRICES,
-        type_labels=MembershipType.LABELS, now=datetime.now())
+        type_labels=MembershipType.LABELS, now=datetime.now(),
+        suggested_id=_next_membership_id())
 
 
 @admin_bp.route('/members/<int:member_id>/edit', methods=['GET', 'POST'])
