@@ -238,7 +238,7 @@ def members():
     elif filter_status == 'expired':
         query = query.filter_by(is_active=False)
 
-    all_members = query.order_by(Member.membership_start.desc(), Member.created_at.desc()).all()
+    all_members = query.order_by(Member.updated_at.desc(), Member.created_at.desc()).all()
 
     return render_template('admin/members.html',
         members=all_members,
@@ -334,6 +334,7 @@ def edit_member(member_id):
         member.phone = phone or None
         member.email = email or None
         member.membership_type = membership_type
+        member.updated_at = datetime.now()
         db.session.commit()
         flash(f'Member "{full_name}" updated successfully.', 'success')
         return redirect(url_for('admin.members'))
@@ -368,6 +369,7 @@ def renew_member(member_id):
     keep_billing_day = past_grace and not from_today
     amount = member.get_monthly_fee()
     member.renew(from_today=from_today, keep_billing_day=keep_billing_day)
+    member.updated_at = datetime.now()
     payment = Payment(
         member_id=member.id,
         amount=amount,

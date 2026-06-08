@@ -16,6 +16,7 @@ MIGRATIONS = [
     ("admins",  "email",           "ALTER TABLE admins ADD COLUMN email VARCHAR(120)"),
     ("admins",  "phone",           "ALTER TABLE admins ADD COLUMN phone VARCHAR(20)"),
     ("admins",  "backup_pin_hash", "ALTER TABLE admins ADD COLUMN backup_pin_hash VARCHAR(255)"),
+    ("members", "updated_at",          "ALTER TABLE members ADD COLUMN updated_at DATETIME"),
     ("members", "waiver_signed_at",    "ALTER TABLE members ADD COLUMN waiver_signed_at DATETIME"),
     ("members", "waiver_name",         "ALTER TABLE members ADD COLUMN waiver_name VARCHAR(120)"),
     ("members", "waiver_fb_username",  "ALTER TABLE members ADD COLUMN waiver_fb_username VARCHAR(100)"),
