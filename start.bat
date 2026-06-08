@@ -1,8 +1,8 @@
 @echo off
 title FitnessMadness Kiosk
 
-:: Change to the project directory (update this path to match the gym PC)
-cd /d C:\fitnessmadness
+:: Change to the project directory (wherever this .bat file lives)
+cd /d %~dp0
 
 :: Activate virtual environment
 call venv\Scripts\activate
