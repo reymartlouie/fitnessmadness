@@ -95,6 +95,7 @@ def export_members_csv():
     search = request.args.get('search', '').strip()
     filter_type = request.args.get('type', '').strip()
     filter_status = request.args.get('status', '').strip()
+    filter_sort = request.args.get('sort', '').strip()
 
     query = Member.query
     if search:
@@ -109,7 +110,14 @@ def export_members_csv():
     elif filter_status == 'expired':
         query = query.filter_by(is_active=False)
 
-    all_members = query.order_by(Member.created_at.desc()).all()
+    if filter_sort == 'az':
+        query = query.order_by(Member.full_name.asc())
+    elif filter_sort == 'za':
+        query = query.order_by(Member.full_name.desc())
+    else:
+        query = query.order_by(Member.updated_at.desc(), Member.created_at.desc())
+
+    all_members = query.all()
 
     output = io.StringIO()
     writer = csv.writer(output)
@@ -223,6 +231,7 @@ def members():
     search = request.args.get('search', '').strip()
     filter_type = request.args.get('type', '').strip()
     filter_status = request.args.get('status', '').strip()
+    filter_sort = request.args.get('sort', '').strip()
 
     query = Member.query
 
@@ -238,13 +247,21 @@ def members():
     elif filter_status == 'expired':
         query = query.filter_by(is_active=False)
 
-    all_members = query.order_by(Member.updated_at.desc(), Member.created_at.desc()).all()
+    if filter_sort == 'az':
+        query = query.order_by(Member.full_name.asc())
+    elif filter_sort == 'za':
+        query = query.order_by(Member.full_name.desc())
+    else:
+        query = query.order_by(Member.updated_at.desc(), Member.created_at.desc())
+
+    all_members = query.all()
 
     return render_template('admin/members.html',
         members=all_members,
         search=search,
         filter_type=filter_type,
         filter_status=filter_status,
+        filter_sort=filter_sort,
         membership_types=MembershipType.ALL,
         prices=MEMBERSHIP_PRICES,
         type_labels=MembershipType.LABELS

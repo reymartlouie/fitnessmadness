@@ -6,7 +6,7 @@
 <div class="d-flex justify-content-between align-items-start mb-1">
     <div class="page-title">Members</div>
     <div class="d-flex gap-2">
-        <a href="{{ url_for('admin.export_members_csv', search=search, type=filter_type, status=filter_status) }}"
+        <a href="{{ url_for('admin.export_members_csv', search=search, type=filter_type, status=filter_status, sort=filter_sort) }}"
            class="btn btn-outline-secondary btn-sm px-3">
             <i class="bi bi-download me-1"></i>Export CSV
         </a>
@@ -41,12 +41,20 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-2">
                     <label class="form-label text-muted small">Status</label>
                     <select name="status" class="form-select">
                         <option value="">All</option>
                         <option value="active" {% if filter_status == 'active' %}selected{% endif %}>Active</option>
                         <option value="expired" {% if filter_status == 'expired' %}selected{% endif %}>Expired</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label text-muted small">Sort</label>
+                    <select name="sort" class="form-select">
+                        <option value="" {% if filter_sort == '' %}selected{% endif %}>Recent First</option>
+                        <option value="az" {% if filter_sort == 'az' %}selected{% endif %}>A – Z</option>
+                        <option value="za" {% if filter_sort == 'za' %}selected{% endif %}>Z – A</option>
                     </select>
                 </div>
             </div>
