@@ -238,7 +238,7 @@ def members():
     elif filter_status == 'expired':
         query = query.filter_by(is_active=False)
 
-    all_members = query.order_by(Member.created_at.desc()).all()
+    all_members = query.order_by(Member.membership_start.desc(), Member.created_at.desc()).all()
 
     return render_template('admin/members.html',
         members=all_members,
