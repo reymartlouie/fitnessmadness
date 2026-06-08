@@ -22,9 +22,8 @@
             {% if action == 'add' %}
             <div class="mb-3">
                 <label class="form-label text-muted small">Membership ID</label>
-                <input type="text" name="membership_id" class="form-control" required
-                       value="{{ request.form.get('membership_id', suggested_id) }}">
-                <div class="form-text text-muted">Auto-generated. You can change it if needed.</div>
+                <input type="hidden" name="membership_id" value="{{ suggested_id }}">
+                <input type="text" class="form-control" value="{{ suggested_id }}" disabled>
             </div>
             {% else %}
             <div class="mb-3">
