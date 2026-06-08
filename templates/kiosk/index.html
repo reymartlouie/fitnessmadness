@@ -387,7 +387,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <div class="fw-bold fs-5">{{ looked_up_member.full_name }}</div>
-                        <div class="text-muted small">{{ looked_up_member.membership_id }} · {{ looked_up_member.membership_type.capitalize() }}</div>
+                        <div class="text-muted small">{{ looked_up_member.membership_id }} · {{ looked_up_member.get_type_label() }}</div>
                     </div>
                     <div class="text-end">
                         {% if looked_up_member.is_active %}

@@ -36,7 +36,7 @@
                         <option value="">All Types</option>
                         {% for t in membership_types %}
                             <option value="{{ t }}" {% if filter_type == t %}selected{% endif %}>
-                                {{ t.capitalize() }}
+                                {{ type_labels[t] }}
                             </option>
                         {% endfor %}
                     </select>
@@ -102,13 +102,25 @@
                         {% endif %}
                     </td>
                     <td>
-                        {% if member.membership_type == 'regular' %}
-                            <span class="badge bg-primary bg-opacity-25 text-primary">Regular</span>
-                        {% elif member.membership_type == 'student' %}
-                            <span class="badge bg-info bg-opacity-25 text-info">Student</span>
-                        {% else %}
-                            <span class="badge bg-warning bg-opacity-25 text-warning">Senior</span>
-                        {% endif %}
+                        {% set _bg = {
+                            'personal_trainer':    'bg-danger',
+                            'supervised_standard': 'bg-primary',
+                            'supervised_student':  'bg-info',
+                            'regular':             'bg-success',
+                            'student':             'bg-success',
+                            'senior':              'bg-warning'
+                        } %}
+                        {% set _tx = {
+                            'personal_trainer':    'text-danger',
+                            'supervised_standard': 'text-primary',
+                            'supervised_student':  'text-info',
+                            'regular':             'text-success',
+                            'student':             'text-success',
+                            'senior':              'text-warning'
+                        } %}
+                        <span class="badge {{ _bg.get(member.membership_type, 'bg-secondary') }} bg-opacity-25 {{ _tx.get(member.membership_type, 'text-secondary') }}">
+                            {{ member.get_type_label() }}
+                        </span>
                     </td>
                     <td>₱{{ "%.2f"|format(member.get_monthly_fee()) }}</td>
                     <td>{{ member.membership_end.strftime('%b %d, %Y') }}</td>

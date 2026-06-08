@@ -98,7 +98,7 @@
                             <span class="text-muted small">No contact info</span>
                         {% endif %}
                     </td>
-                    <td>{{ member.membership_type.capitalize() }}</td>
+                    <td>{{ member.get_type_label() }}</td>
                     <td>{{ member.membership_end.strftime('%b %d, %Y') }}</td>
                     <td>
                         {% set days = member.days_remaining() %}

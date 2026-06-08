@@ -67,7 +67,7 @@
                             {% if action == 'edit' and member.membership_type == t %}selected
                             {% elif action == 'add' and request.form.get('membership_type') == t %}selected
                             {% endif %}>
-                            {{ t.capitalize() }} — ₱{{ "%.2f"|format(prices[t]) }}/month
+                            {{ type_labels[t] }} — ₱{{ "%.2f"|format(prices[t]) }}/month
                         </option>
                     {% endfor %}
                 </select>
