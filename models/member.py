@@ -4,17 +4,39 @@ from dateutil.relativedelta import relativedelta
 
 
 class MembershipType:
-    REGULAR = 'regular'
-    STUDENT = 'student'
-    SENIOR = 'senior'
+    PERSONAL_TRAINER    = 'personal_trainer'
+    SUPERVISED_STANDARD = 'supervised_standard'
+    SUPERVISED_STUDENT  = 'supervised_student'
+    REGULAR             = 'regular'
+    STUDENT             = 'student'
+    SENIOR              = 'senior'
 
-    ALL = [REGULAR, STUDENT, SENIOR]
+    ALL = [
+        'personal_trainer',
+        'supervised_standard',
+        'supervised_student',
+        'regular',
+        'student',
+        'senior',
+    ]
+
+    LABELS = {
+        'personal_trainer':    'Personal Trainer (1-on-1)',
+        'supervised_standard': 'With Supervision – Standard',
+        'supervised_student':  'With Supervision – Student',
+        'regular':             'No Supervision – Standard',
+        'student':             'No Supervision – Student',
+        'senior':              'Senior',
+    }
 
 
 MEMBERSHIP_PRICES = {
-    MembershipType.REGULAR: 850.00,
-    MembershipType.STUDENT: 650.00,
-    MembershipType.SENIOR: 650.00,    # same as student rate
+    MembershipType.PERSONAL_TRAINER:    3800.00,
+    MembershipType.SUPERVISED_STANDARD: 1650.00,
+    MembershipType.SUPERVISED_STUDENT:  1350.00,
+    MembershipType.REGULAR:              950.00,
+    MembershipType.STUDENT:              650.00,
+    MembershipType.SENIOR:               650.00,
 }
 
 
@@ -39,6 +61,9 @@ class Member(db.Model):
 
     def get_monthly_fee(self):
         return MEMBERSHIP_PRICES.get(self.membership_type, MEMBERSHIP_PRICES[MembershipType.REGULAR])
+
+    def get_type_label(self):
+        return MembershipType.LABELS.get(self.membership_type, self.membership_type.replace('_', ' ').capitalize())
 
     GRACE_DAYS = 7
 
