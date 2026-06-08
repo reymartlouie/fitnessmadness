@@ -30,7 +30,19 @@ start /B python app.py
 :: Wait 3 seconds for Flask to start
 timeout /t 3 /nobreak >nul
 
-:: Open Chrome in kiosk mode
-start chrome --kiosk --app=http://localhost:5000
+:: Open kiosk in Chrome, fall back to Edge if Chrome is not installed
+set BROWSER=
+if exist "%PROGRAMFILES%\Google\Chrome\Application\chrome.exe" set BROWSER=%PROGRAMFILES%\Google\Chrome\Application\chrome.exe
+if exist "%PROGRAMFILES(X86)%\Google\Chrome\Application\chrome.exe" set BROWSER=%PROGRAMFILES(X86)%\Google\Chrome\Application\chrome.exe
+if exist "%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe" set BROWSER=%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe
+
+if "%BROWSER%"=="" if exist "%PROGRAMFILES(X86)%\Microsoft\Edge\Application\msedge.exe" set BROWSER=%PROGRAMFILES(X86)%\Microsoft\Edge\Application\msedge.exe
+if "%BROWSER%"=="" if exist "%PROGRAMFILES%\Microsoft\Edge\Application\msedge.exe" set BROWSER=%PROGRAMFILES%\Microsoft\Edge\Application\msedge.exe
+
+if "%BROWSER%"=="" (
+    echo [WARN] Chrome and Edge not found. Open http://localhost:5000 manually in your browser.
+) else (
+    start "" "%BROWSER%" --kiosk --app=http://localhost:5000
+)
 
 echo FitnessMadness is running.

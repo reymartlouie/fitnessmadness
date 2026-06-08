@@ -128,7 +128,22 @@ echo Creating desktop shortcut...
 powershell -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut([Environment]::GetFolderPath('Desktop') + '\FitnessMadness Kiosk.lnk'); $s.TargetPath = '%~dp0start.bat'; $s.WorkingDirectory = '%~dp0'; $s.IconLocation = 'shell32.dll,137'; $s.Description = 'Launch FitnessMadness Kiosk'; $s.Save()"
 echo [OK] Desktop shortcut created. Double-click it anytime to relaunch the kiosk.
 
-:: ── Step 11: Google Drive backup notice ───────────────────────────────
+:: ── Step 11: Allow port 5000 through Windows Firewall ────────────────
+echo.
+echo Configuring Windows Firewall for port 5000...
+netsh advfirewall firewall show rule name="FitnessMadness Kiosk" >nul 2>&1
+if errorlevel 1 (
+    netsh advfirewall firewall add rule name="FitnessMadness Kiosk" dir=in action=allow protocol=TCP localport=5000 >nul 2>&1
+    if errorlevel 1 (
+        echo [WARN] Could not add firewall rule. Run setup.bat as Administrator to enable this.
+    ) else (
+        echo [OK] Firewall rule added. Port 5000 will not prompt on launch.
+    )
+) else (
+    echo [OK] Firewall rule already exists.
+)
+
+:: ── Step 12: Google Drive backup notice ───────────────────────────────
 echo.
 echo ============================================
 echo   OPTIONAL: Google Drive Backup
