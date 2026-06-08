@@ -124,7 +124,7 @@ def export_members_csv():
             m.full_name,
             m.phone or '',
             m.email or '',
-            m.membership_type.capitalize(),
+            m.get_type_label(),
             f'{m.get_monthly_fee():.2f}',
             m.membership_start.strftime('%Y-%m-%d'),
             m.membership_end.strftime('%Y-%m-%d'),
@@ -246,7 +246,8 @@ def members():
         filter_type=filter_type,
         filter_status=filter_status,
         membership_types=MembershipType.ALL,
-        prices=MEMBERSHIP_PRICES
+        prices=MEMBERSHIP_PRICES,
+        type_labels=MembershipType.LABELS
     )
 
 
@@ -268,25 +269,25 @@ def add_member():
             flash('All fields are required. Please fill in Membership ID, Full Name, Phone, and Email.', 'danger')
             return render_template('admin/member_form.html',
                 action='add', membership_types=MembershipType.ALL, prices=MEMBERSHIP_PRICES,
-                now=datetime.now())
+                type_labels=MembershipType.LABELS, now=datetime.now())
 
         if not waiver_name:
             flash('Member must print their name on the waiver before registering.', 'danger')
             return render_template('admin/member_form.html',
                 action='add', membership_types=MembershipType.ALL, prices=MEMBERSHIP_PRICES,
-                now=datetime.now())
+                type_labels=MembershipType.LABELS, now=datetime.now())
 
         if not waiver_agreed:
             flash('Member must agree to the waiver before registering.', 'danger')
             return render_template('admin/member_form.html',
                 action='add', membership_types=MembershipType.ALL, prices=MEMBERSHIP_PRICES,
-                now=datetime.now())
+                type_labels=MembershipType.LABELS, now=datetime.now())
 
         if Member.query.filter_by(membership_id=membership_id).first():
             flash(f'Membership ID "{membership_id}" is already taken.', 'danger')
             return render_template('admin/member_form.html',
                 action='add', membership_types=MembershipType.ALL, prices=MEMBERSHIP_PRICES,
-                now=datetime.now())
+                type_labels=MembershipType.LABELS, now=datetime.now())
 
         member = Member(
             membership_id=membership_id,
@@ -308,7 +309,7 @@ def add_member():
 
     return render_template('admin/member_form.html',
         action='add', membership_types=MembershipType.ALL, prices=MEMBERSHIP_PRICES,
-        now=datetime.now())
+        type_labels=MembershipType.LABELS, now=datetime.now())
 
 
 @admin_bp.route('/members/<int:member_id>/edit', methods=['GET', 'POST'])
@@ -326,7 +327,8 @@ def edit_member(member_id):
             flash('Full name is required.', 'danger')
             return render_template('admin/member_form.html',
                 action='edit', member=member,
-                membership_types=MembershipType.ALL, prices=MEMBERSHIP_PRICES)
+                membership_types=MembershipType.ALL, prices=MEMBERSHIP_PRICES,
+                type_labels=MembershipType.LABELS)
 
         member.full_name = full_name
         member.phone = phone or None
@@ -338,7 +340,8 @@ def edit_member(member_id):
 
     return render_template('admin/member_form.html',
         action='edit', member=member,
-        membership_types=MembershipType.ALL, prices=MEMBERSHIP_PRICES)
+        membership_types=MembershipType.ALL, prices=MEMBERSHIP_PRICES,
+        type_labels=MembershipType.LABELS)
 
 
 @admin_bp.route('/members/<int:member_id>/renew', methods=['GET', 'POST'])
@@ -370,7 +373,7 @@ def renew_member(member_id):
         amount=amount,
         payment_date=today,
         recorded_at=datetime.now(),
-        notes=f'{member.membership_type.capitalize()} membership renewal'
+        notes=f'{member.get_type_label()} membership renewal'
     )
     db.session.add(payment)
     db.session.commit()
@@ -439,7 +442,7 @@ def export_payments_csv():
             p.payment_date.strftime('%Y-%m-%d'),
             p.member.full_name,
             p.member.membership_id,
-            p.member.membership_type.capitalize(),
+            p.member.get_type_label(),
             f'{p.amount:.2f}',
             p.notes or '',
         ])
