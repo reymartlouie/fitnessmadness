@@ -80,16 +80,14 @@
                             'supervised_standard': 'bg-primary',
                             'supervised_student':  'bg-info',
                             'regular':             'bg-success',
-                            'student':             'bg-success',
-                            'senior':              'bg-warning'
+                            'student':             'bg-success'
                         } %}
                         {% set _tx = {
                             'personal_trainer':    'text-danger',
                             'supervised_standard': 'text-primary',
                             'supervised_student':  'text-info',
                             'regular':             'text-success',
-                            'student':             'text-success',
-                            'senior':              'text-warning'
+                            'student':             'text-success'
                         } %}
                         <span class="badge {{ _bg.get(p.member.membership_type, 'bg-secondary') }} bg-opacity-25 {{ _tx.get(p.member.membership_type, 'text-secondary') }}">
                             {{ p.member.get_type_label() }}

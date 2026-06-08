@@ -9,7 +9,6 @@ class MembershipType:
     SUPERVISED_STUDENT  = 'supervised_student'
     REGULAR             = 'regular'
     STUDENT             = 'student'
-    SENIOR              = 'senior'
 
     ALL = [
         'personal_trainer',
@@ -17,7 +16,6 @@ class MembershipType:
         'supervised_student',
         'regular',
         'student',
-        'senior',
     ]
 
     LABELS = {
@@ -26,7 +24,6 @@ class MembershipType:
         'supervised_student':  'With Supervision – Student',
         'regular':             'No Supervision – Standard',
         'student':             'No Supervision – Student',
-        'senior':              'Senior',
     }
 
 
@@ -36,7 +33,6 @@ MEMBERSHIP_PRICES = {
     MembershipType.SUPERVISED_STUDENT:  1350.00,
     MembershipType.REGULAR:              950.00,
     MembershipType.STUDENT:              650.00,
-    MembershipType.SENIOR:               650.00,
 }
 
 
